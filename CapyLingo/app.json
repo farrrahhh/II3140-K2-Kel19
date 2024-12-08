@@ -5,6 +5,12 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
+    "scheme": "capylingo",
+    "splash": {
+      "image": "./assets/images/logo.png", 
+      "resizeMode": "contain", 
+      "backgroundColor": "#FFB0B0" 
+    },
     "updates": {
       "fallbackToCacheTimeout": 0
     },
@@ -20,7 +26,8 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#FFB0B0"
       },
-      "package": "com.itb.capylingo"
+      "package": "com.itb.capylingo",
+      "newArchEnabled": true
     },
     "web": {
       "bundler": "metro",
