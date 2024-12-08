@@ -39,7 +39,7 @@ export default function SplashScreen() {
         source={require('../assets/images/logo.png')}
         style={styles.logo}
       />
-      <Text style={styles.title}>Time Blade</Text>
+      <Text style={styles.title}>CapyLingo</Text>
       <Text style={styles.tagline}>Learn English the Capybara Way: </Text>
       <Text style={styles.tagline}>Calm, Confident, and Clever!</Text>
     </View>
