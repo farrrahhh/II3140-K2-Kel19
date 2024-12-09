@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, Dimensions, FlatList, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState, useRef } from 'react';
+import { View, Text, StyleSheet, Image, Dimensions, FlatList, TouchableOpacity, Animated } from 'react-native';
 import { useRouter } from 'expo-router'; 
 import { loadFonts } from '../components/FontLoader'; 
 
@@ -28,15 +28,24 @@ const slides = [
 
 const SplashScreen = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [fontsLoaded, setFontsLoaded] = useState(false); // Declare fontsLoaded inside the component
-  const router = useRouter(); // Hook untuk navigasi menggunakan Expo Router
+  const [fontsLoaded, setFontsLoaded] = useState(false);
+  const router = useRouter(); 
+
+  const imageAnim = useRef(new Animated.Value(0)).current; // Create animation for the image
 
   useEffect(() => {
     const fetchFonts = async () => {
-      await loadFonts(); // Call the loadFonts function to load custom fonts
-      setFontsLoaded(true); // Set fontsLoaded to true after loading fonts
+      await loadFonts(); 
+      setFontsLoaded(true); 
     };
     fetchFonts();
+
+    // Start the animation as soon as the component loads
+    Animated.timing(imageAnim, {
+      toValue: 1,
+      duration: 1000,
+      useNativeDriver: true,
+    }).start();
   }, []);
 
   const handleScroll = (event: { nativeEvent: { contentOffset: { x: number } } }) => {
@@ -45,12 +54,11 @@ const SplashScreen = () => {
   };
 
   const navigateToHome = () => {
-    router.push('/home'); // Navigate to the home screen
+    router.push('/home');
   };
 
-  // Only render the splash screen if the fonts are loaded
   if (!fontsLoaded) {
-    return null; // Or a loading indicator can be shown here
+    return null; 
   }
 
   return (
@@ -64,7 +72,24 @@ const SplashScreen = () => {
         onScroll={handleScroll}
         renderItem={({ item }) => (
           <View style={styles.slide}>
-            <Image source={item.image} style={styles.image} />
+            {/* Image with animation */}
+            <Animated.Image
+              source={item.image}
+              style={[
+                styles.image,
+                {
+                  opacity: imageAnim, // Animating opacity
+                  transform: [
+                    {
+                      scale: imageAnim.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0.8, 1], // Start smaller and scale to 1
+                      }),
+                    },
+                  ],
+                },
+              ]}
+            />
             <Text style={styles.title}>{item.title}</Text>
             <Text style={styles.description}>{item.description}</Text>
           </View>
@@ -83,7 +108,6 @@ const SplashScreen = () => {
         ))}
       </View>
 
-      {/* Tombol Mulai */}
       {currentIndex === slides.length - 1 && (
         <TouchableOpacity style={styles.button} onPress={navigateToHome}>
           <Text style={styles.buttonText}>Study with Capybara!</Text>
