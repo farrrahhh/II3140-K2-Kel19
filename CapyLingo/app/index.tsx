@@ -78,12 +78,12 @@ const SplashScreen = () => {
               style={[
                 styles.image,
                 {
-                  opacity: imageAnim, // Animating opacity
+                  opacity: imageAnim, 
                   transform: [
                     {
                       scale: imageAnim.interpolate({
                         inputRange: [0, 1],
-                        outputRange: [0.8, 1], // Start smaller and scale to 1
+                        outputRange: [0.8, 1],
                       }),
                     },
                   ],
