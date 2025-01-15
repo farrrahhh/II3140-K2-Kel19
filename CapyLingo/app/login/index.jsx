@@ -15,6 +15,7 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width } = Dimensions.get('window');
 
@@ -53,6 +54,11 @@ const Login = () => {
       const result = await response.json();
 
       if (response.ok) {
+        // save token to async storage
+        await AsyncStorage.setItem('token', result.token);
+        await AsyncStorage.setItem('username', result.username);
+        await AsyncStorage.setItem('level', result.level);
+
         router.replace('/belajar');
       } else {
         setErrorMessage(result.message);
