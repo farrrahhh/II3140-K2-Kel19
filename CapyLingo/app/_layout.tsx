@@ -9,7 +9,7 @@ export default function Layout() {
   const segments = useSegments(); // Get current route segments
 
   // Check if the current route should show the navbar
-  const showNavbar = ['/belajar', '/quiz', '/vocab'].includes(`/${segments.join('/')}`);
+  const showNavbar = ['/belajar', '/vocab', '/profile'].includes(`/${segments.join('/')}`);
 
   return (
     <View style={styles.container}>

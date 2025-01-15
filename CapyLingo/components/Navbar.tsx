@@ -1,6 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Platform } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { View, Text, StyleSheet, TouchableOpacity, Platform, Image } from 'react-native';
 import { useRouter, usePathname } from 'expo-router';
 import { useFonts } from 'expo-font';
 
@@ -30,17 +29,17 @@ const Navbar = () => {
   const navItems = [
     {
       route: '/belajar',
-      icon: 'home',
+      icon: require('../assets/images/home.png'),
       label: 'Home',
     },
     {
       route: '/vocab',
-      icon: 'book',
+      icon: require('../assets/images/book.png'),
       label: 'Vocab',
     },
     {
       route: '/profile',
-      icon: 'person',
+      icon: require('../assets/images/profile.png'),
       label: 'Profile',
     },
   ];
@@ -59,10 +58,13 @@ const Navbar = () => {
               accessibilityState={{ selected: isActive }}
             >
               <View style={styles.iconContainer}>
-                <Ionicons
-                  name={item.icon as any}
-                  size={24}
-                  color={isActive ? '#FFFFFF' : '#FFB0B0'}
+                <Image
+                  source={item.icon}
+                  style={[
+                    styles.icon,
+                    isActive && styles.activeIcon,
+                  ]}
+                  resizeMode="contain" 
                 />
                 {isActive && <View style={styles.activeIndicator} />}
               </View>
@@ -89,6 +91,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFB0B0',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
+
+    overflow: 'hidden', // Agar konten di dalam mengikuti border radius
   },
   navbarContainer: {
     flexDirection: 'row',
@@ -110,6 +114,10 @@ const styles = StyleSheet.create({
     marginBottom: 4,
     position: 'relative',
   },
+  icon: {
+    width: 32,
+    height: 32,
+  },
   activeIndicator: {
     position: 'absolute',
     bottom: -8,
@@ -117,6 +125,9 @@ const styles = StyleSheet.create({
     height: 4,
     borderRadius: 2,
     backgroundColor: '#FFFFFF',
+  },
+  activeIcon: {
+    
   },
   navText: {
     fontSize: 12,

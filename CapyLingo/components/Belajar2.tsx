@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -7,18 +7,18 @@ import {
   Image,
   ScrollView,
   SafeAreaView,
-  Dimensions,
+  Animated,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
-import { LinearGradient } from 'expo-linear-gradient';
-
-const { width } = Dimensions.get('window');
 
 const Belajar2 = () => {
   const [username, setUsername] = useState<string>('User');
-  const [level, setLevel] = useState<number>(1); // Default level 1
+  const [level, setLevel] = useState<number>(2); // Default level 2
   const router = useRouter();
+
+  // Animasi naik-turun untuk level 2
+  const animation = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -36,67 +36,103 @@ const Belajar2 = () => {
     fetchUserData();
   }, []);
 
-  const handleLogout = async () => {
-    await AsyncStorage.clear();
-    router.replace('/login');
+  useEffect(() => {
+    // Animasi khusus untuk level 2 yang aktif
+    if (level === 2) {
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(animation, {
+            toValue: -10,
+            duration: 500,
+            useNativeDriver: true,
+          }),
+          Animated.timing(animation, {
+            toValue: 0,
+            duration: 500,
+            useNativeDriver: true,
+          }),
+        ])
+      ).start();
+    }
+  }, [level]);
+
+  const levelIcons = [
+    { id: 1, image: require('../assets/images/level1.png'), align: 'flex-start' as 'flex-start' },
+    { id: 2, image: require('../assets/images/love-2.png'), align: 'center' as 'center' },
+    { id: 3, image: require('../assets/images/level-3.png'), align: 'flex-end' as 'flex-end' },
+    { id: 4, image: require('../assets/images/level-4.png'), align: 'center' as 'center' },
+    { id: 5, image: require('../assets/images/level-5.png'), align: 'flex-start' as 'flex-start' },
+  ];
+
+  const renderLevelIcons = () => {
+    return levelIcons.map((item) => {
+      const isActive = item.id === 1 || item.id === 2; // Level 1 dan 2 aktif
+      const isAnimating = item.id === 2; // Animasi hanya untuk level 2
+
+      return (
+        <View
+          key={item.id}
+          style={{
+            alignItems: item.align,
+            marginHorizontal: 20, // Margin kanan-kiri untuk ikon
+          }}
+        >
+          {isActive ? (
+            <TouchableOpacity
+            style={styles.touchableArea}
+            onPress={async () => {
+              await AsyncStorage.setItem('level_quiz', item.id.toString()); // Simpan level quiz sementara
+              router.push(`/quiz?level=${item.id}`); // Arahkan ke halaman quiz dengan query level
+            }}
+            disabled={item.id > level} // Hanya aktifkan tombol jika level quiz <= level user
+          >
+            <Animated.View
+              style={[
+                styles.outerCircle,
+                isAnimating && { transform: [{ translateY: animation }] },
+              ]}
+            >
+              <View style={styles.levelCircle}>
+                <Image source={item.image} style={styles.levelImage} />
+              </View>
+            </Animated.View>
+          </TouchableOpacity>
+          ) : (
+            <View style={[styles.levelCircle, styles.inactiveLevel]}>
+              <Image source={item.image} style={styles.levelImage} />
+            </View>
+          )}
+        </View>
+      );
+    });
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <LinearGradient colors={['#FFE5E5', '#FFD09B']} style={styles.gradient}>
-        <ScrollView contentContainerStyle={styles.scrollContent}>
-          {/* Sidebar */}
-          
-
-          {/* Levels Section */}
-          <View style={styles.levelSection}>
-            <TouchableOpacity
-              style={styles.levelCircle}
-              onPress={() => router.push(`/quiz?level=${level}`)}
-            >
-              <View style={styles.outerCircle}>
-                <View style={styles.innerCircle}>
-                  <Image
-                    source={require('../assets/images/level1.png')}
-                    style={styles.levelImage}
-                    resizeMode="contain"
-                  />
-                </View>
-              </View>
-            </TouchableOpacity>
-          </View>
-
-          {/* Mantra Section */}
-          <View style={styles.mantraSection}>
-            <View style={styles.mantraContent}>
-              <Text style={styles.greeting}>Hello {username}!</Text>
-              <View style={styles.mantraToday}>
-                <View style={styles.contentLeft}>
-                  <Image
-                    source={require('../assets/images/piala.png')}
-                    style={styles.trophyImage}
-                    resizeMode="contain"
-                  />
-                  <Text style={styles.levelText}>Level {level}</Text>
-                </View>
-                <View style={styles.contentRight}>
-                  <Text style={styles.mantraTitle}>Today's Mantra</Text>
-                  <Text style={styles.mantraText}>
-                    A positive attitude gives you power over your circumstances.
-                  </Text>
-                </View>
-              </View>
-            </View>
-            <View style={styles.mantraImageWrapper}>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        {/* Mantra Card */}
+        <View style={styles.mantraCard}>
+          <Text style={styles.greeting}>Hello {username}!</Text>
+          <View style={styles.mantraContent}>
+            <View style={styles.mantraLeft}>
               <Image
-                source={require('../assets/images/butterfly.gif')}
-                style={styles.butterflyImage}
-                resizeMode="contain"
+                source={require('../assets/images/piala.png')}
+                style={styles.trophyImage}
               />
+              <Text style={styles.levelText}>Level {level}</Text>
+            </View>
+            <View style={styles.mantraRight}>
+              <Text style={styles.mantraTitle}>Today's Mantra</Text>
+              <Text style={styles.mantraText}>
+                "The more you practice, the better you get. Keep pushing forward!"
+              </Text>
             </View>
           </View>
-        </ScrollView>
-      </LinearGradient>
+        </View>
+
+        {/* Levels Section */}
+        <View style={styles.levelSection}>{renderLevelIcons()}</View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -104,65 +140,37 @@ const Belajar2 = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFE5E5',
-  },
-  gradient: {
-    flex: 1,
+    backgroundColor: '#fff',
   },
   scrollContent: {
     flexGrow: 1,
     paddingBottom: 80,
   },
-
-  levelSection: {
-    alignItems: 'center',
-    marginVertical: 20,
-  },
-  levelCircle: {
-    alignItems: 'center',
-  },
-  outerCircle: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    borderWidth: 5,
-    borderColor: '#FFD09B',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  innerCircle: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    backgroundColor: '#FFB0B0',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  levelImage: {
-    width: 80,
-    height: 80,
-  },
-  mantraSection: {
+  mantraCard: {
+    marginTop: 50,
     margin: 20,
-    backgroundColor: '#fff',
-    borderRadius: 20,
     padding: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    borderWidth: 2,
+    borderColor: '#FFB0B0',
+    shadowColor: '#FFB0B0',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
     elevation: 5,
   },
-  mantraContent: {
-    marginBottom: 20,
-  },
   greeting: {
-    fontSize: 24,
-    fontWeight: 'bold',
+    fontSize: 20,
     color: '#333',
-    marginBottom: 15,
+    marginBottom: 8,
+    fontFamily: 'Poppins-Bold',
   },
-  mantraToday: {
+  mantraContent: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  contentLeft: {
+  mantraLeft: {
     flex: 1,
     alignItems: 'center',
   },
@@ -173,30 +181,56 @@ const styles = StyleSheet.create({
   },
   levelText: {
     fontSize: 16,
-    fontWeight: 'bold',
     color: '#333',
+    fontFamily: 'Poppins-Bold',
   },
-  contentRight: {
+  mantraRight: {
     flex: 2,
     paddingLeft: 15,
   },
   mantraTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontFamily: 'Poppins-Bold',
     color: '#333',
-    marginBottom: 5,
+    marginBottom: 4,
   },
   mantraText: {
-    fontSize: 14,
+    fontSize: 13,
+    fontFamily: 'Poppins-Regular',
     color: '#666',
+    lineHeight: 20,
   },
-  mantraImageWrapper: {
+  levelSection: {
     marginTop: 20,
+  },
+  touchableArea: {
+    justifyContent: 'center',
     alignItems: 'center',
   },
-  butterflyImage: {
+  outerCircle: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 3,
+    borderColor: '#ffd09b', // Warna kuning untuk level aktif (1 dan 2)
+  },
+  levelCircle: {
     width: 100,
     height: 100,
+    borderRadius: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#ffd09b', // Warna orange untuk level aktif
+  },
+  inactiveLevel: {
+    backgroundColor: '#ccc', // Warna abu-abu untuk ikon yang tidak aktif
+  },
+  levelImage: {
+    width: 70,
+    height: 70,
+    resizeMode: 'contain',
   },
 });
 

@@ -56,8 +56,10 @@ const Login = () => {
       if (response.ok) {
         // save token to async storage
         await AsyncStorage.setItem('token', result.token);
+        await AsyncStorage.setItem('userId', result.userId.toString()); 
         await AsyncStorage.setItem('username', result.username);
         await AsyncStorage.setItem('level', result.level);
+        
 
         router.replace('/belajar');
       } else {

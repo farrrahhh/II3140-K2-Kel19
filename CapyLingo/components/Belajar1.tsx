@@ -149,17 +149,19 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: 'white',
     borderRadius: 20,
+    borderWidth: 2,
+    borderColor: '#FFB0B0', 
     shadowColor: '#FFB0B0',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
     elevation: 5,
   },
   greeting: {
-    fontSize: 24,
-    fontWeight: 'bold',
+    fontSize: 20,
     color: '#333',
-    marginBottom: 15,
+    marginBottom: 8,
+    fontFamily: 'Poppins-Bold',
   },
   mantraContent: {
     flexDirection: 'row',
@@ -176,8 +178,8 @@ const styles = StyleSheet.create({
   },
   levelText: {
     fontSize: 16,
-    fontWeight: 'bold',
     color: '#333',
+    fontFamily: 'Poppins-Bold',
   },
   mantraRight: {
     flex: 2,
@@ -185,12 +187,13 @@ const styles = StyleSheet.create({
   },
   mantraTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontFamily: 'Poppins-Bold',
     color: '#333',
-    marginBottom: 5,
+    marginBottom: 4,
   },
   mantraText: {
-    fontSize: 14,
+    fontSize: 13,
+    fontFamily: 'Poppins-Regular',
     color: '#666',
     lineHeight: 20,
   },
@@ -208,7 +211,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 3,
-    borderColor: '#fff7d1', // Warna kuning untuk lingkaran luar saat aktif
+    borderColor: '#fff7d1', 
   },
   levelCircle: {
     width: 100,
@@ -216,10 +219,10 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#ffd09b', // Warna orange untuk lingkaran dalam saat aktif
+    backgroundColor: '#ffd09b', 
   },
   inactiveLevel: {
-    backgroundColor: '#ccc', // Warna abu-abu untuk ikon yang tidak aktif
+    backgroundColor: '#ccc', 
   },
   levelImage: {
     width: 70,
