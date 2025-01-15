@@ -82,7 +82,7 @@ const Login = () => {
         <TouchableOpacity style={styles.button} onPress={handleSubmit}>
           <Text style={styles.buttonText}>Log In</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => router.push('/sign-up')}>
+        <TouchableOpacity onPress={() => router.push('/signup')}>
           <Text style={styles.bottomLink}>
             Don't have an account? <Text style={styles.linkText}>Sign Up</Text>
           </Text>
