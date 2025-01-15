@@ -1,185 +1,77 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { View, Text, StyleSheet, Image, Dimensions, FlatList, TouchableOpacity, Animated } from 'react-native';
-import { useRouter } from 'expo-router'; 
-import { loadFonts } from '../components/FontLoader'; 
+import React, { useEffect, useState } from 'react';
+import { View, ActivityIndicator, StyleSheet } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useRouter } from 'expo-router';
+import SplashScreen from './SplashScreen';
 
-const { width, height } = Dimensions.get("window");
-
-const slides = [
-  {
-    id: "1",
-    title: "Selamat Datang di CapyLingo",
-    description: "Mulailah perjalanan bahasa Inggris yang menyenangkan bersama Capybara kami!",
-    image: require("../assets/images/capybara1.png"),
-  },
-  {
-    id: "2",
-    title: "Belajar Bahasa Inggris Tanpa Batas",
-    description: "Pahami, pelajari, dan kuasai bahasa Inggris kapan saja, di mana saja.",
-    image: require("../assets/images/capybara2.png"),
-  },
-  {
-    id: "3",
-    title: "Bersiap untuk Meningkatkan Level!",
-    description: "Selangkah lebih dekat menuju kefasihan bahasa Inggris.",
-    image: require("../assets/images/capybara3.png"),
-  },
-];
-
-const SplashScreen = () => {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [fontsLoaded, setFontsLoaded] = useState(false);
-  const router = useRouter(); 
-
-  const imageAnim = useRef(new Animated.Value(0)).current; // Create animation for the image
+const App: React.FC = () => {
+  const [showSplash, setShowSplash] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const router = useRouter();
 
   useEffect(() => {
-    const fetchFonts = async () => {
-      await loadFonts(); 
-      setFontsLoaded(true); 
+    const checkFirstLaunch = async () => {
+      try {
+        // Cek apakah aplikasi sudah pernah dibuka sebelumnya
+        const hasLaunched = await AsyncStorage.getItem('hasLaunched');
+        if (hasLaunched === null) {
+          // Jika belum pernah dibuka, tampilkan splash screen
+          setShowSplash(true);
+          await AsyncStorage.setItem('hasLaunched', 'true');
+        } else {
+          // Jika sudah pernah dibuka, langsung cek token
+          checkAuth();
+        }
+      } catch (error) {
+        console.error('Error checking first launch:', error);
+        router.replace('/login');
+      } finally {
+        setIsLoading(false);
+      }
     };
-    fetchFonts();
 
-    // Start the animation as soon as the component loads
-    Animated.timing(imageAnim, {
-      toValue: 1,
-      duration: 1000,
-      useNativeDriver: true,
-    }).start();
-  }, []);
+    const checkAuth = async () => {
+      try {
+        const token = await AsyncStorage.getItem('token');
+        if (token) {
+          // Jika token ada, arahkan ke halaman belajar
+          router.replace('/belajar');
+        } else {
+          // Jika tidak ada token, arahkan ke halaman login
+          router.replace('/login');
+        }
+      } catch (error) {
+        console.error('Error checking auth:', error);
+        router.replace('/login');
+      }
+    };
 
-  const handleScroll = (event: { nativeEvent: { contentOffset: { x: number } } }) => {
-    const index = Math.round(event.nativeEvent.contentOffset.x / width);
-    setCurrentIndex(index);
-  };
+    checkFirstLaunch();
+  }, [router]);
 
-  const navigateToHome = () => {
-    router.push('/login');
-  };
-
-  if (!fontsLoaded) {
-    return null; 
+  if (isLoading) {
+    // Tampilkan loading indicator selama proses pengecekan berlangsung
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#4CAF50" />
+      </View>
+    );
   }
 
-  return (
-    <View style={styles.container}>
-      <FlatList
-        data={slides}
-        horizontal
-        pagingEnabled
-        showsHorizontalScrollIndicator={false}
-        keyExtractor={(item) => item.id}
-        onScroll={handleScroll}
-        renderItem={({ item }) => (
-          <View style={styles.slide}>
-            {/* Image with animation */}
-            <Animated.Image
-              source={item.image}
-              style={[
-                styles.image,
-                {
-                  opacity: imageAnim, 
-                  transform: [
-                    {
-                      scale: imageAnim.interpolate({
-                        inputRange: [0, 1],
-                        outputRange: [0.8, 1],
-                      }),
-                    },
-                  ],
-                },
-              ]}
-            />
-            <Text style={styles.title}>{item.title}</Text>
-            <Text style={styles.description}>{item.description}</Text>
-          </View>
-        )}
-      />
-      
-      <View style={styles.pagination}>
-        {slides.map((_, index) => (
-          <View
-            key={index}
-            style={[
-              styles.dot,
-              currentIndex === index ? styles.activeDot : styles.inactiveDot,
-            ]}
-          />
-        ))}
-      </View>
+  if (showSplash) {
+    // Tampilkan splash screen jika aplikasi pertama kali dibuka
+    return <SplashScreen />;
+  }
 
-      {currentIndex === slides.length - 1 && (
-        <TouchableOpacity style={styles.button} onPress={navigateToHome}>
-          <Text style={styles.buttonText}>Study with Capybara!</Text>
-        </TouchableOpacity>
-      )}
-    </View>
-  );
+  return null;
 };
 
 const styles = StyleSheet.create({
-  container: {
+  loadingContainer: {
     flex: 1,
-    backgroundColor: "#FFF7D1",
-  },
-  slide: {
-    width,
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 20,
-  },
-  image: {
-    width: width * 0.8,
-    height: height * 0.4,
-    resizeMode: "contain",
-    marginBottom: 0,
-  },
-  title: {
-    fontFamily: 'Poppins-SemiBold', 
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "#333",
-    textAlign: "center",
-    marginBottom: 10,
-  },
-  description: {
-    fontSize: 16,
-    color: "#555",
-    textAlign: "center",
-    fontFamily: 'Poppins-Light',
-  },
-  pagination: {
-    flexDirection: "row",
-    justifyContent: "center",
-    marginBottom: 20,
-  },
-  dot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    marginHorizontal: 5,
-  },
-  activeDot: {
-    backgroundColor: "#FFD09B",
-  },
-  inactiveDot: {
-    backgroundColor: "#FFE3B6",
-  },
-  button: {
-    position: "absolute",
-    bottom: 50,
-    left: width * 0.1,
-    right: width * 0.1,
-    backgroundColor: "#FFB0B0",
-    padding: 15,
-    borderRadius: 15,
-    alignItems: "center",
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "bold",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 
-export default SplashScreen;
+export default App;
