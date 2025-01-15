@@ -1,16 +1,23 @@
-// app/_layout.tsx
+import React from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { View, Text, StyleSheet } from 'react-native';
-import { Slot } from 'expo-router'; // Untuk menampilkan konten halaman dinamis
+import { View, StyleSheet } from 'react-native';
+import { Slot, useRouter, useSegments } from 'expo-router';
+import Navbar from '../components/Navbar'; // Import the Navbar component
 
 export default function Layout() {
+  const router = useRouter();
+  const segments = useSegments(); // Get current route segments
+
+  // Check if the current route should show the navbar
+  const showNavbar = ['/belajar', '/quiz', '/vocab'].includes(`/${segments.join('/')}`);
+
   return (
     <View style={styles.container}>
-      
       <StatusBar style="dark" backgroundColor="#FFB0B0" />
-      <Slot />
-      <View style={styles.footer}>
-      </View>
+      <Slot /> {/* Slot for rendering dynamic content */}
+
+      {/* Conditionally render Navbar */}
+      {showNavbar && <Navbar />}
     </View>
   );
 }
@@ -18,14 +25,6 @@ export default function Layout() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
-  },
-  footer: {
-    padding: 10,
-    backgroundColor: "#FFF7D1",
-    alignItems: "center",
-    position: "absolute",
-    bottom: 0,
-    width: "100%",
+    backgroundColor: '#fff',
   },
 });

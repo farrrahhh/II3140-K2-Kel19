@@ -1,22 +1,47 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+  SafeAreaView,
+  Animated,
+  Dimensions,
+  KeyboardAvoidingView,
+  Platform,
+  Image,
+} from 'react-native';
 import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+
+const { width } = Dimensions.get('window');
 
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false); // State untuk show/hide password
   const [errorMessage, setErrorMessage] = useState('');
   const router = useRouter();
 
+  const fadeAnim = useState(new Animated.Value(0))[0];
+
+  React.useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 1000,
+      useNativeDriver: true,
+    }).start();
+  }, []);
+
   const handleSubmit = async () => {
-    // Validate input
     if (!username || !password) {
       setErrorMessage('Please fill in both fields');
       return;
     }
 
     try {
-      // Send login request to backend
       const response = await fetch('https://capy-lingo-backend.vercel.app/api/login', {
         method: 'POST',
         headers: {
@@ -28,16 +53,7 @@ const Login = () => {
       const result = await response.json();
 
       if (response.ok) {
-        // Store user data in AsyncStorage (React Native's equivalent to sessionStorage)
-        // You'll need to import AsyncStorage from '@react-native-async-storage/async-storage'
-        // and install the package if you haven't already
-        // AsyncStorage.setItem('token', result.token);
-        // AsyncStorage.setItem('userId', result.userId);
-        // AsyncStorage.setItem('username', result.username);
-        // AsyncStorage.setItem('level', result.level.toString());
-
-        // Navigate to user-specific page based on level
-        router.replace(`/belajar/level${result.level}`);
+        router.replace('/belajar');
       } else {
         setErrorMessage(result.message);
       }
@@ -47,132 +63,165 @@ const Login = () => {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <View style={styles.formPicture}>
-        <View style={styles.pictureText}>
-          <Text style={styles.title}>Capy Lingo</Text>
-          <Text style={styles.subtitle}>Learn English with Capybara</Text>
-        </View>
-      </View>
-      <View style={styles.formBox}>
-        <Text style={styles.formTitle}>Login</Text>
-        <Text style={styles.formSubtitle}>
-          Ready to sharpen your English skills and have some fun? Let's get started!
-        </Text>
-        {errorMessage ? <Text style={styles.errorMessage}>{errorMessage}</Text> : null}
-        <View style={styles.inputField}>
-          <TextInput
-            style={styles.input}
-            placeholder="Username"
-            value={username}
-            onChangeText={setUsername}
-            placeholderTextColor="#888"
-          />
-        </View>
-        <View style={styles.inputField}>
-          <TextInput
-            style={styles.input}
-            placeholder="Password"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-            placeholderTextColor="#888"
-          />
-        </View>
-        <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-          <Text style={styles.buttonText}>Log In</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => router.push('/sign-up')}>
-          <Text style={styles.bottomLink}>
-            Don't have an account? <Text style={styles.linkText}>Sign Up</Text>
-          </Text>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
+    <SafeAreaView style={styles.container}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.container}
+      >
+        <ScrollView contentContainerStyle={styles.scrollContainer}>
+          <Animated.View style={[styles.content, { opacity: fadeAnim }]}>
+            <View style={styles.gradientBackground}>
+              <View style={styles.logoContainer}>
+                <Image
+                  source={require('../../assets/images/window.png')}
+                  style={{ width: width / 1.5, height: width / 1.5 }}
+                  resizeMode="contain"
+                />
+              </View>
+            </View>
+            <View style={styles.formContainer}>
+              <Text style={styles.formTitle}>Welcome Back!</Text>
+              <Text style={styles.formSubtitle}>
+                Ready to sharpen your English skills and have some fun? Let's get started!
+              </Text>
+              {errorMessage ? <Text style={styles.errorMessage}>{errorMessage}</Text> : null}
+              <View style={styles.inputContainer}>
+                <Ionicons name="person-outline" size={24} color="#888" style={styles.inputIcon} />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Username"
+                  value={username}
+                  onChangeText={setUsername}
+                  placeholderTextColor="#888"
+                />
+              </View>
+              <View style={styles.inputContainer}>
+                <Ionicons name="lock-closed-outline" size={24} color="#888" style={styles.inputIcon} />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Password"
+                  value={password}
+                  onChangeText={setPassword}
+                  secureTextEntry={!isPasswordVisible} // Tampilkan password jika isPasswordVisible true
+                  placeholderTextColor="#888"
+                />
+                <TouchableOpacity
+                  onPress={() => setIsPasswordVisible(!isPasswordVisible)}
+                  style={styles.eyeIcon}
+                >
+                  <Ionicons
+                    name={isPasswordVisible ? 'eye-off-outline' : 'eye-outline'}
+                    size={24}
+                    color="#888"
+                  />
+                </TouchableOpacity>
+              </View>
+              <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+                <Text style={styles.buttonText}>Log In</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => router.push('/signup')}>
+                <Text style={styles.bottomLink}>
+                  Don't have an account? <Text style={styles.linkText}>Sign Up</Text>
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </Animated.View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
+    flex: 1,
     backgroundColor: '#fff',
   },
-  formPicture: {
-    backgroundColor: '#ffb0b0', // Updated to use the primary color
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 40,
-    height: '40%', // Adjust this value to control the height of the pink section
+  scrollContainer: {
+    flexGrow: 1,
   },
-  pictureText: {
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: 48,
-    fontFamily: 'Comfortaa',
-    fontWeight: '700',
-    marginBottom: 10,
-    color: '#333', // Adjusted for better contrast on pink background
-  },
-  subtitle: {
-    fontSize: 24,
-    fontFamily: 'Poor Story',
-    textAlign: 'center',
-    color: '#333', // Adjusted for better contrast on pink background
-  },
-  formBox: {
-    padding: 20,
-    alignItems: 'center',
+  content: {
     flex: 1,
-    backgroundColor: '#ffb0b0',
   },
-  formTitle: {      
+  gradientBackground: {
+    height: '40%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#FFB0B0',
+  },
+  logoContainer: {
+    alignItems: 'center',
+  },
+  formContainer: {
+    padding: 20,
+    backgroundColor: '#fff',
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    marginTop: -30,
+    flex: 1,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: -3 },
+        shadowOpacity: 0.1,
+        shadowRadius: 3,
+      },
+      android: {
+        elevation: 5,
+      },
+    }),
+  },
+  formTitle: {
     fontSize: 32,
     fontFamily: 'Poppins',
     fontWeight: 'bold',
-    color: '#00000',
+    color: '#333',
     marginBottom: 10,
+    textAlign: 'center',
   },
   formSubtitle: {
     fontSize: 16,
-    color: '#333',
+    color: '#666',
     textAlign: 'center',
     marginBottom: 20,
-    fontWeight: 'bold',
     fontFamily: 'Poppins',
   },
   errorMessage: {
-    color: 'red',
+    color: '#FF6B6B',
     marginBottom: 10,
     fontFamily: 'Poppins',
+    textAlign: 'center',
   },
-  inputField: {
-    width: '100%',
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: 15,
-    fontFamily: 'Poppins',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    paddingHorizontal: 10,
+  },
+  inputIcon: {
+    marginRight: 10,
   },
   input: {
-    width: '100%',
+    flex: 1,
     padding: 15,
     fontSize: 16,
-    borderWidth: 2,
-    borderColor: '#333',
-    borderRadius: 8,
-    backgroundColor: '#fff',
     fontFamily: 'Poppins',
+  },
+  eyeIcon: {
+    padding: 5,
   },
   button: {
     backgroundColor: '#FFD09B',
     padding: 15,
     borderRadius: 8,
-    borderWidth: 2,
-    width: '100%',
     alignItems: 'center',
     marginTop: 10,
-    borderColor: '#333',
   },
   buttonText: {
-    color: '#00000',
+    color: '#333',
     fontSize: 18,
     fontWeight: 'bold',
     fontFamily: 'Poppins',
@@ -181,12 +230,13 @@ const styles = StyleSheet.create({
     marginTop: 20,
     fontSize: 16,
     fontFamily: 'Poppins',
+    textAlign: 'center',
+    color: '#666',
   },
   linkText: {
-    color: '#00000',
+    color: '#FFB0B0',
     textDecorationLine: 'underline',
   },
 });
 
 export default Login;
-
