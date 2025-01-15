@@ -54,7 +54,7 @@ const SplashScreen = () => {
   };
 
   const navigateToHome = () => {
-    router.push('/home');
+    router.push('/login');
   };
 
   if (!fontsLoaded) {
