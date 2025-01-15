@@ -36,7 +36,7 @@ const Login = () => {
         await AsyncStorage.setItem('level', result.level.toString()); // Simpan level user
 
         // Navigasi ke halaman belajar sesuai level
-        router.replace(`/belajar`);
+        router.replace(`/home`);
       } else {
         setErrorMessage(result.message); // Tampilkan pesan error dari server
       }
@@ -69,7 +69,7 @@ const Login = () => {
       <Button title="Log In" onPress={handleSubmit} />
       <Text style={styles.bottomLink}>
         Don't have an account?{' '}
-        <Text style={styles.linkText} onPress={() => router.push('/sign-up/signup.html')}>
+        <Text style={styles.linkText} onPress={() => router.push('/signup')}>
           Sign Up
         </Text>
       </Text>
