@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
     paddingBottom: 80,
   },
   mantraCard: {
-    marginTop: 50,
+    marginTop: 30,
     margin: 20,
     padding: 20,
     backgroundColor: 'white',
