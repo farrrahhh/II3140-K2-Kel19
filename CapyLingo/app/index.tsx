@@ -1,77 +1,133 @@
-import React, { useEffect, useState } from 'react';
-import { View, ActivityIndicator, StyleSheet } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import React from 'react';
+import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
-import SplashScreen from './SplashScreen';
 
-const App: React.FC = () => {
-  const [showSplash, setShowSplash] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+const VocabulariesPage: React.FC = () => {
   const router = useRouter();
 
-  useEffect(() => {
-    const checkFirstLaunch = async () => {
-      try {
-        // Cek apakah aplikasi sudah pernah dibuka sebelumnya
-        const hasLaunched = await AsyncStorage.getItem('hasLaunched');
-        if (hasLaunched === null) {
-          // Jika belum pernah dibuka, tampilkan splash screen
-          setShowSplash(true);
-          await AsyncStorage.setItem('hasLaunched', 'true');
-        } else {
-          // Jika sudah pernah dibuka, langsung cek token
-          checkAuth();
-        }
-      } catch (error) {
-        console.error('Error checking first launch:', error);
-        router.replace('/login');
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  const redirectToLevelPage = async () => {
+    try {
+      // Assume user level is stored in AsyncStorage
+      const userLevel = 1; // Replace this with AsyncStorage logic if needed
+      router.push('/belajar');
+    } catch (error) {
+      Alert.alert('Error', 'Failed to retrieve level.');
+    }
+  };
 
-    const checkAuth = async () => {
-      try {
-        const token = await AsyncStorage.getItem('token');
-        if (token) {
-          // Jika token ada, arahkan ke halaman belajar
-          router.replace('/belajar');
-        } else {
-          // Jika tidak ada token, arahkan ke halaman login
-          router.replace('/login');
-        }
-      } catch (error) {
-        console.error('Error checking auth:', error);
-        router.replace('/login');
-      }
-    };
+  const logout = () => {
+    Alert.alert('Logout', 'You have been logged out.');
+    router.replace('/login');
+  };
 
-    checkFirstLaunch();
-  }, [router]);
-
-  if (isLoading) {
-    // Tampilkan loading indicator selama proses pengecekan berlangsung
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#4CAF50" />
+  return (
+    <View style={styles.container}>
+      {/* Header Section */}
+      <View style={styles.header}>
       </View>
-    );
-  }
 
-  if (showSplash) {
-    // Tampilkan splash screen jika aplikasi pertama kali dibuka
-    return <SplashScreen />;
-  }
+      {/* Title */}
+      <Text style={styles.title}>Choose a category:</Text>
 
-  return null;
+      {/* Vocabs Section */}
+      <ScrollView contentContainerStyle={styles.vocabsContainer}>
+        <TouchableOpacity
+          style={styles.vocabs}
+          onPress={() => router.push('/fruits')}
+        >
+          <View style={styles.vocabsItem}>
+            <Image
+              source={require('../assets/images/watermelon.png')}
+              style={styles.vocabsImage}
+            />
+            <Text style={styles.vocabsText}>Fruits</Text>
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.vocabs}
+          onPress={() => router.push('/vegetables')}
+        >
+          <View style={styles.vocabsItem}>
+            <Image
+              source={require('../assets/images/eggplant.png')}
+              style={styles.vocabsImage}
+            />
+            <Text style={styles.vocabsText}>Vegetables</Text>
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.vocabs}
+          onPress={() => router.push('/activities')}
+        >
+          <View style={styles.vocabsItem}>
+            <Image
+              source={require('../assets/images/eat.png')}
+              style={styles.vocabsImage}
+            />
+            <Text style={styles.vocabsText}>Activities</Text>
+          </View>
+        </TouchableOpacity>
+      </ScrollView>
+    </View>
+  );
 };
 
+export default VocabulariesPage;
+
+/* ========== STYLES ========== */
 const styles = StyleSheet.create({
-  loadingContainer: {
+  container: {
     flex: 1,
-    justifyContent: 'center',
+    backgroundColor: '#fff',
+    paddingTop: 40,
+    paddingHorizontal: 20,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+    marginTop: 40,
+  },
+  logo: {
+    width: 40,
+    height: 40,
+  },
+  logoText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginLeft: 10,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 20,
+    fontFamily: 'Poppins',
+  },
+  vocabsContainer: {
     alignItems: 'center',
   },
+  vocabs: {
+    backgroundColor: '#f0f0f0',
+    padding: 20,
+    borderRadius: 8,
+    marginBottom: 20,
+    width: '100%',
+    alignItems: 'center',
+  },
+  vocabsItem: {
+    alignItems: 'center',
+  },
+  vocabsImage: {
+    width: 100,
+    height: 100,
+    marginBottom: 10,
+  },
+  vocabsText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    fontFamily: 'Poppins',
+  },
 });
-
-export default App;
