@@ -37,7 +37,7 @@ const Login = () => {
         // AsyncStorage.setItem('level', result.level.toString());
 
         // Navigate to user-specific page based on level
-        router.replace(`/belajar/level${result.level}`);
+        router.replace(`/vocabularies`);
       } else {
         setErrorMessage(result.message);
       }
