@@ -11,7 +11,7 @@
   "include": [
     "**/*.ts",
     "**/*.tsx",
-    "app/login/index.tsx",
+    "app/login/index.jsx",
     "app/_layout.jsx",
     "../index.tsx",
     ".expo/types/**/*.ts",
