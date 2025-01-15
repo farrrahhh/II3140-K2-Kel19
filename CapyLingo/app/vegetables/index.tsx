@@ -27,7 +27,7 @@ const VegetablesVocabularyGame: React.FC = () => {
 
   // Definitions / Images
   const [definitions, setDefinitions] = useState<Definition[]>([
-    { id: 'def1', word: 'Bell Pepper', image: require('../../assets/images/bell-paper.png'), matched: false },
+    { id: 'def1', word: 'Bell Pepper', image: require('../../assets/images/bellpaper.png'), matched: false },
     { id: 'def2', word: 'Spinach', image: require('../../assets/images/spinach.png'), matched: false },
     { id: 'def3', word: 'Celery', image: require('../../assets/images/celery.png'), matched: false },
   ]);

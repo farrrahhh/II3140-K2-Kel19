@@ -8,20 +8,42 @@ const Vocab: React.FC = () => {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
+        {/* Space at the top */}
         <View style={styles.spacer} />
 
-        <TouchableOpacity style={[styles.vocabCard, styles.cardFruits]} onPress={() => router.push('/fruits')}>
-          <Image source={require('../../assets/images/watermelon.png')} style={styles.vocabImage} />
+        {/* Fruits Card */}
+        <TouchableOpacity
+          style={[styles.vocabCard, styles.cardFruits]}
+          onPress={() => router.push('/fruits' as any)}
+        >
+          <Image
+            source={require('../../assets/images/watermelon.png')}
+            style={styles.vocabImage}
+          />
           <Text style={styles.vocabText}>Fruits</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={[styles.vocabCard, styles.cardVegetables]} onPress={() => router.push('/vegetables')}>
-          <Image source={require('../../assets/images/eggplant.png')} style={styles.vocabImage} />
+        {/* Vegetables Card */}
+        <TouchableOpacity
+          style={[styles.vocabCard, styles.cardVegetables]}
+          onPress={() => router.push('/vegetables' as any)}
+        >
+          <Image
+            source={require('../../assets/images/eggplant.png')}
+            style={styles.vocabImage}
+          />
           <Text style={styles.vocabText}>Vegetables</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={[styles.vocabCard, styles.cardActivities]} onPress={() => router.push('/activities')}>
-          <Image source={require('../../assets/images/eat.png')} style={styles.vocabImage} />
+        {/* Activities Card */}
+        <TouchableOpacity
+          style={[styles.vocabCard, styles.cardActivities]}
+          onPress={() => router.push('/activities' as any)}
+        >
+          <Image
+            source={require('../../assets/images/eat.png')}
+            style={styles.vocabImage}
+          />
           <Text style={styles.vocabText}>Activities</Text>
         </TouchableOpacity>
       </ScrollView>
@@ -35,49 +57,49 @@ export default Vocab;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#fff', // Ensure the background is consistent
   },
   scrollContent: {
     paddingHorizontal: 20,
     paddingBottom: 40,
     alignItems: 'center',
-    marginTop: 40,
+    marginTop: 20,
   },
   spacer: {
     height: 20, // Add space at the top
   },
   vocabCard: {
     width: '90%',
-    borderRadius: 20,
-    paddingVertical: 30,
-    paddingHorizontal: 20,
+    borderRadius: 15,
+    paddingVertical: 25,
+    paddingHorizontal: 15,
     alignItems: 'center',
     marginBottom: 20,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 5 },
+    shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.1,
-    shadowRadius: 10,
+    shadowRadius: 6,
     elevation: 5,
   },
   cardFruits: {
-    backgroundColor: '#ffd09b',
+    backgroundColor: '#FFD09B', // Light orange for Fruits
   },
   cardVegetables: {
-    backgroundColor: '#ffb0b0',
+    backgroundColor: '#FFB0B0', // Light pink for Vegetables
   },
   cardActivities: {
-    backgroundColor: '#FFF8D1',
+    backgroundColor: '#FFF8D1', // Light yellow for Activities
   },
   vocabImage: {
-    width: 80,
-    height: 80,
-    marginBottom: 15,
+    width: 100,
+    height: 100,
+    marginBottom: 10,
+    resizeMode: 'contain', // Ensure images fit inside the container
   },
   vocabText: {
-    fontSize: 18,
-    fontWeight: 'bold',
+    fontSize: 20,
+    fontWeight: '600',
     fontFamily: 'Poppins-SemiBold',
-    color: '#333',
+    color: '#333', // Darker text for readability
   },
 });
-
