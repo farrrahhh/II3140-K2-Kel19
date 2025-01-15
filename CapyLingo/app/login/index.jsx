@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 
 const Login = () => {
@@ -8,17 +9,15 @@ const Login = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const router = useRouter();
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-
-    // Validate input
-    if (!username || !password) {
+  const handleSubmit = async () => {
+    // Validasi input
+    if (!username.trim() || !password.trim()) {
       setErrorMessage('Please fill in both fields');
       return;
     }
 
     try {
-      // Send login request to backend
+      // Kirim permintaan login ke backend
       const response = await fetch('https://capy-lingo-backend.vercel.app/api/login', {
         method: 'POST',
         headers: {
@@ -30,18 +29,19 @@ const Login = () => {
       const result = await response.json();
 
       if (response.ok) {
-        // Store user data in sessionStorage
-        sessionStorage.setItem('token', result.token);
-        sessionStorage.setItem('userId', result.userId);
-        sessionStorage.setItem('username', result.username);
-        sessionStorage.setItem('level', result.level); // Store user level
+        // Simpan data user di AsyncStorage
+        await AsyncStorage.setItem('token', result.token);
+        await AsyncStorage.setItem('userId', result.userId.toString());
+        await AsyncStorage.setItem('username', result.username);
+        await AsyncStorage.setItem('level', result.level.toString()); // Simpan level user
 
-        // Navigate to user-specific page based on level
-        router.replace(`/belajar/level${result.level}.html`);
+        // Navigasi ke halaman belajar sesuai level
+        router.replace(`/belajar`);
       } else {
-        setErrorMessage(result.message); // Show server message if any error occurs
+        setErrorMessage(result.message); // Tampilkan pesan error dari server
       }
     } catch (error) {
+      console.error('Error:', error);
       setErrorMessage('An error occurred while logging in. Please try again.');
     }
   };
@@ -52,13 +52,12 @@ const Login = () => {
       <Text style={styles.subtitle}>
         Ready to sharpen your English skills and have some fun? Let’s get started!
       </Text>
-      {errorMessage && <Text style={styles.errorMessage}>{errorMessage}</Text>}
+      {errorMessage ? <Text style={styles.errorMessage}>{errorMessage}</Text> : null}
       <TextInput
         style={styles.input}
         placeholder="Username"
         value={username}
         onChangeText={setUsername}
-        required
       />
       <TextInput
         style={styles.input}
@@ -66,11 +65,13 @@ const Login = () => {
         value={password}
         onChangeText={setPassword}
         secureTextEntry
-        required
       />
       <Button title="Log In" onPress={handleSubmit} />
       <Text style={styles.bottomLink}>
-        Don't have an account? <Text onPress={() => router.push('/sign-up/signup.html')}>Sign Up</Text>
+        Don't have an account?{' '}
+        <Text style={styles.linkText} onPress={() => router.push('/sign-up/signup.html')}>
+          Sign Up
+        </Text>
       </Text>
     </View>
   );
@@ -108,6 +109,10 @@ const styles = StyleSheet.create({
   bottomLink: {
     marginTop: 20,
     color: 'blue',
+  },
+  linkText: {
+    color: 'blue',
+    textDecorationLine: 'underline',
   },
 });
 
