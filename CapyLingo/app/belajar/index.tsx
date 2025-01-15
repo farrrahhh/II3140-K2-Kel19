@@ -42,7 +42,7 @@ const Belajar = () => {
         </Text>
         <Button
           title={`Start Level ${level} Quiz`}
-          onPress={() => router.push(`/quiz/level${level}`)}
+          onPress={() => router.push(`/quiz`)}
         />
       </View>
     );

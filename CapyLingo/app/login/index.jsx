@@ -36,7 +36,7 @@ const Login = () => {
         await AsyncStorage.setItem('level', result.level.toString()); // Simpan level user
 
         // Navigasi ke halaman belajar sesuai level
-        router.replace(`/home`);
+        router.replace(`/belajar`);
       } else {
         setErrorMessage(result.message); // Tampilkan pesan error dari server
       }
