@@ -17,7 +17,7 @@ const Login = () => {
 
     try {
       // Send login request to backend
-      const response = await fetch('https://capy-lingo-backend.vercel.app/api/login', {
+      const response = await fetch('https://capy-lingo-backend.vercel.app/api/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -55,7 +55,7 @@ const Login = () => {
         </View>
       </View>
       <View style={styles.formBox}>
-        <Text style={styles.formTitle}>Login</Text>
+        <Text style={styles.formTitle}>Signup</Text>
         <Text style={styles.formSubtitle}>
           Ready to sharpen your English skills and have some fun? Let's get started!
         </Text>
@@ -80,9 +80,9 @@ const Login = () => {
           />
         </View>
         <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-          <Text style={styles.buttonText}>Log In</Text>
+          <Text style={styles.buttonText}>Sign up</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => router.push('/sign-up')}>
+        <TouchableOpacity onPress={() => router.push('/login')}>
           <Text style={styles.bottomLink}>
             Don't have an account? <Text style={styles.linkText}>Sign Up</Text>
           </Text>
@@ -188,5 +188,5 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Login;
+export default Signup;
 
