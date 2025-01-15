@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+
 import { useRouter } from 'expo-router';
 
 const Signup = () => {
@@ -9,14 +10,19 @@ const Signup = () => {
   const router = useRouter();
 
   const handleSubmit = async () => {
-    // Validate input
-    if (!username || !password) {
+    // Validasi input
+    if (!username.trim() || !password.trim()) {
       setErrorMessage('Please fill in both fields');
       return;
     }
 
+    if (password.length < 6) {
+      setErrorMessage('Password must be at least 6 characters');
+      return;
+    }
+
     try {
-      // Send login request to backend
+      // Kirim permintaan signup ke backend
       const response = await fetch('https://capy-lingo-backend.vercel.app/api/signup', {
         method: 'POST',
         headers: {
@@ -28,21 +34,15 @@ const Signup = () => {
       const result = await response.json();
 
       if (response.ok) {
-        // Store user data in AsyncStorage (React Native's equivalent to sessionStorage)
-        // You'll need to import AsyncStorage from '@react-native-async-storage/async-storage'
-        // and install the package if you haven't already
-        // AsyncStorage.setItem('token', result.token);
-        // AsyncStorage.setItem('userId', result.userId);
-        // AsyncStorage.setItem('username', result.username);
-        // AsyncStorage.setItem('level', result.level.toString());
-
-        // Navigate to user-specific page based on level
-        router.replace(`/belajar`);
+        
+        // Navigasi ke halaman belajar
+        router.replace('/login');
       } else {
-        setErrorMessage(result.message);
+        setErrorMessage(result.message || 'Signup failed');
       }
     } catch (error) {
-      setErrorMessage('An error occurred while logging in. Please try again.');
+      console.error('Error during signup:', error);
+      setErrorMessage('An error occurred. Please try again later.');
     }
   };
 
@@ -54,12 +54,15 @@ const Signup = () => {
           <Text style={styles.subtitle}>Learn English with Capybara</Text>
         </View>
       </View>
+
       <View style={styles.formBox}>
-        <Text style={styles.formTitle}>Signup</Text>
+        <Text style={styles.formTitle}>Sign Up</Text>
         <Text style={styles.formSubtitle}>
           Ready to sharpen your English skills and have some fun? Let's get started!
         </Text>
+
         {errorMessage ? <Text style={styles.errorMessage}>{errorMessage}</Text> : null}
+
         <View style={styles.inputField}>
           <TextInput
             style={styles.input}
@@ -69,6 +72,7 @@ const Signup = () => {
             placeholderTextColor="#888"
           />
         </View>
+
         <View style={styles.inputField}>
           <TextInput
             style={styles.input}
@@ -79,12 +83,14 @@ const Signup = () => {
             placeholderTextColor="#888"
           />
         </View>
+
         <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-          <Text style={styles.buttonText}>Sign up</Text>
+          <Text style={styles.buttonText}>Sign Up</Text>
         </TouchableOpacity>
+
         <TouchableOpacity onPress={() => router.push('/login')}>
           <Text style={styles.bottomLink}>
-            Don't have an account? <Text style={styles.linkText}>Sign Up</Text>
+            Already have an account? <Text style={styles.linkText}>Log In</Text>
           </Text>
         </TouchableOpacity>
       </View>
@@ -98,11 +104,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   formPicture: {
-    backgroundColor: '#ffb0b0', // Updated to use the primary color
+    backgroundColor: '#ffb0b0',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 40,
-    height: '40%', // Adjust this value to control the height of the pink section
+    height: '40%',
   },
   pictureText: {
     alignItems: 'center',
@@ -112,13 +118,13 @@ const styles = StyleSheet.create({
     fontFamily: 'Comfortaa',
     fontWeight: '700',
     marginBottom: 10,
-    color: '#333', // Adjusted for better contrast on pink background
+    color: '#333',
   },
   subtitle: {
     fontSize: 24,
     fontFamily: 'Poor Story',
     textAlign: 'center',
-    color: '#333', // Adjusted for better contrast on pink background
+    color: '#333',
   },
   formBox: {
     padding: 20,
@@ -126,11 +132,11 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#ffb0b0',
   },
-  formTitle: {      
+  formTitle: {
     fontSize: 32,
     fontFamily: 'Poppins',
     fontWeight: 'bold',
-    color: '#00000',
+    color: '#333',
     marginBottom: 10,
   },
   formSubtitle: {
@@ -149,7 +155,6 @@ const styles = StyleSheet.create({
   inputField: {
     width: '100%',
     marginBottom: 15,
-    fontFamily: 'Poppins',
   },
   input: {
     width: '100%',
@@ -172,7 +177,7 @@ const styles = StyleSheet.create({
     borderColor: '#333',
   },
   buttonText: {
-    color: '#00000',
+    color: '#333',
     fontSize: 18,
     fontWeight: 'bold',
     fontFamily: 'Poppins',
@@ -183,10 +188,9 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins',
   },
   linkText: {
-    color: '#00000',
+    color: '#333',
     textDecorationLine: 'underline',
   },
 });
 
 export default Signup;
-
