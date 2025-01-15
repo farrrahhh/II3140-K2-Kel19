@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 
 const Login = () => {
@@ -10,14 +9,14 @@ const Login = () => {
   const router = useRouter();
 
   const handleSubmit = async () => {
-    // Validasi input
-    if (!username.trim() || !password.trim()) {
+    // Validate input
+    if (!username || !password) {
       setErrorMessage('Please fill in both fields');
       return;
     }
 
     try {
-      // Kirim permintaan login ke backend
+      // Send login request to backend
       const response = await fetch('https://capy-lingo-backend.vercel.app/api/login', {
         method: 'POST',
         headers: {
@@ -29,89 +28,162 @@ const Login = () => {
       const result = await response.json();
 
       if (response.ok) {
-        // Simpan data user di AsyncStorage
-        await AsyncStorage.setItem('token', result.token);
-        await AsyncStorage.setItem('userId', result.userId.toString());
-        await AsyncStorage.setItem('username', result.username);
-        await AsyncStorage.setItem('level', result.level.toString()); // Simpan level user
+        // Store user data in AsyncStorage (React Native's equivalent to sessionStorage)
+        // You'll need to import AsyncStorage from '@react-native-async-storage/async-storage'
+        // and install the package if you haven't already
+        // AsyncStorage.setItem('token', result.token);
+        // AsyncStorage.setItem('userId', result.userId);
+        // AsyncStorage.setItem('username', result.username);
+        // AsyncStorage.setItem('level', result.level.toString());
 
-        // Navigasi ke halaman belajar sesuai level
-        router.replace(`/belajar`);
+        // Navigate to user-specific page based on level
+        router.replace(`/belajar/level${result.level}`);
       } else {
-        setErrorMessage(result.message); // Tampilkan pesan error dari server
+        setErrorMessage(result.message);
       }
     } catch (error) {
-      console.error('Error:', error);
       setErrorMessage('An error occurred while logging in. Please try again.');
     }
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Welcome back!</Text>
-      <Text style={styles.subtitle}>
-        Ready to sharpen your English skills and have some fun? Let’s get started!
-      </Text>
-      {errorMessage ? <Text style={styles.errorMessage}>{errorMessage}</Text> : null}
-      <TextInput
-        style={styles.input}
-        placeholder="Username"
-        value={username}
-        onChangeText={setUsername}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
-      <Button title="Log In" onPress={handleSubmit} />
-      <Text style={styles.bottomLink}>
-        Don't have an account?{' '}
-        <Text style={styles.linkText} onPress={() => router.push('/signup')}>
-          Sign Up
+    <ScrollView contentContainerStyle={styles.container}>
+      <View style={styles.formPicture}>
+        <View style={styles.pictureText}>
+          <Text style={styles.title}>Capy Lingo</Text>
+          <Text style={styles.subtitle}>Learn English with Capybara</Text>
+        </View>
+      </View>
+      <View style={styles.formBox}>
+        <Text style={styles.formTitle}>Login</Text>
+        <Text style={styles.formSubtitle}>
+          Ready to sharpen your English skills and have some fun? Let's get started!
         </Text>
-      </Text>
-    </View>
+        {errorMessage ? <Text style={styles.errorMessage}>{errorMessage}</Text> : null}
+        <View style={styles.inputField}>
+          <TextInput
+            style={styles.input}
+            placeholder="Username"
+            value={username}
+            onChangeText={setUsername}
+            placeholderTextColor="#888"
+          />
+        </View>
+        <View style={styles.inputField}>
+          <TextInput
+            style={styles.input}
+            placeholder="Password"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
+            placeholderTextColor="#888"
+          />
+        </View>
+        <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+          <Text style={styles.buttonText}>Log In</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => router.push('/sign-up')}>
+          <Text style={styles.bottomLink}>
+            Don't have an account? <Text style={styles.linkText}>Sign Up</Text>
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    justifyContent: 'center',
+    flexGrow: 1,
+    backgroundColor: '#fff',
+  },
+  formPicture: {
+    backgroundColor: '#ffb0b0', // Updated to use the primary color
     alignItems: 'center',
-    padding: 20,
+    justifyContent: 'center',
+    padding: 40,
+    height: '40%', // Adjust this value to control the height of the pink section
+  },
+  pictureText: {
+    alignItems: 'center',
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
+    fontSize: 48,
+    fontFamily: 'Comfortaa',
+    fontWeight: '700',
     marginBottom: 10,
+    color: '#333', // Adjusted for better contrast on pink background
   },
   subtitle: {
-    fontSize: 16,
-    marginBottom: 20,
+    fontSize: 24,
+    fontFamily: 'Poor Story',
     textAlign: 'center',
+    color: '#333', // Adjusted for better contrast on pink background
+  },
+  formBox: {
+    padding: 20,
+    alignItems: 'center',
+    flex: 1,
+    backgroundColor: '#ffb0b0',
+  },
+  formTitle: {      
+    fontSize: 32,
+    fontFamily: 'Poppins',
+    fontWeight: 'bold',
+    color: '#00000',
+    marginBottom: 10,
+  },
+  formSubtitle: {
+    fontSize: 16,
+    color: '#333',
+    textAlign: 'center',
+    marginBottom: 20,
+    fontWeight: 'bold',
+    fontFamily: 'Poppins',
   },
   errorMessage: {
     color: 'red',
     marginBottom: 10,
+    fontFamily: 'Poppins',
+  },
+  inputField: {
+    width: '100%',
+    marginBottom: 15,
+    fontFamily: 'Poppins',
   },
   input: {
     width: '100%',
-    padding: 10,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-    marginBottom: 10,
+    padding: 15,
+    fontSize: 16,
+    borderWidth: 2,
+    borderColor: '#333',
+    borderRadius: 8,
+    backgroundColor: '#fff',
+    fontFamily: 'Poppins',
+  },
+  button: {
+    backgroundColor: '#FFD09B',
+    padding: 15,
+    borderRadius: 8,
+    borderWidth: 2,
+    width: '100%',
+    alignItems: 'center',
+    marginTop: 10,
+    borderColor: '#333',
+  },
+  buttonText: {
+    color: '#00000',
+    fontSize: 18,
+    fontWeight: 'bold',
+    fontFamily: 'Poppins',
   },
   bottomLink: {
     marginTop: 20,
-    color: 'blue',
+    fontSize: 16,
+    fontFamily: 'Poppins',
   },
   linkText: {
-    color: 'blue',
+    color: '#00000',
     textDecorationLine: 'underline',
   },
 });
