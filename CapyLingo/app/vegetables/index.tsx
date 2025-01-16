@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import * as Font from 'expo-font'; // Import expo-font for font loading
 
 interface Word {
   id: string;
@@ -18,6 +19,7 @@ interface Definition {
 
 const VegetablesVocabularyGame: React.FC = () => {
   const router = useRouter();
+  const [fontsLoaded, setFontsLoaded] = useState(false); // Font loading state
 
   // Words
   const [words, setWords] = useState<Word[]>([
@@ -34,6 +36,23 @@ const VegetablesVocabularyGame: React.FC = () => {
   ]);
 
   const [selectedWord, setSelectedWord] = useState<Word | null>(null);
+
+  useEffect(() => {
+    // Load custom fonts using expo-font
+    const loadFonts = async () => {
+      try {
+        await Font.loadAsync({
+          Poppins: require('../../assets/fonts/Poppins-Regular.ttf'),
+          'Poppins-Bold': require('../../assets/fonts/Poppins-Bold.ttf'),
+        });
+        setFontsLoaded(true);
+      } catch (error) {
+        console.error('Error loading fonts:', error);
+      }
+    };
+
+    loadFonts();
+  }, []);
 
   const handleWordPress = (word: Word) => {
     if (!word.matched) {
@@ -55,13 +74,16 @@ const VegetablesVocabularyGame: React.FC = () => {
     }
   };
 
+  if (!fontsLoaded) {
+    return null; // Render nothing until fonts are loaded
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
           <Ionicons name="arrow-back" size={24} color="#333" />
         </TouchableOpacity>
-        
       </View>
 
       {/* Title */}
@@ -102,6 +124,7 @@ const VegetablesVocabularyGame: React.FC = () => {
 };
 
 export default VegetablesVocabularyGame;
+
 /* ========== STYLES ========== */
 
 const styles = StyleSheet.create({
@@ -111,8 +134,6 @@ const styles = StyleSheet.create({
     paddingTop: 40,
     paddingHorizontal: 20,
   },
-  /* Header */
- 
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -121,61 +142,41 @@ const styles = StyleSheet.create({
   backButton: {
     marginRight: 10,
   },
-  logo: {
-    width: 40,
-    height: 40,
-  },
-  logoText: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginLeft: 10,
-  },
-  /* Title */
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 20,
     marginTop: 40,
-    fontFamily: 'Poppins',
+    fontFamily: 'Poppins-Bold', // Updated font family
   },
-  /* Words Container (Vertical Stack) */
   wordsContainer: {
-    marginBottom: 30, // Add space before images section
-    
+    marginBottom: 30,
   },
   wordBox: {
     backgroundColor: '#FFD09B',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 8,
-    
-    marginBottom: 10, // Vertical spacing
+    marginBottom: 10,
     alignItems: 'center',
   },
   wordText: {
     fontSize: 18,
-    
-    fontFamily: 'Poppins',
+    fontFamily: 'Poppins', // Updated font family
   },
   selectedBox: {
     borderRadius: 8,
-    
     backgroundColor: '#FFAB4D',
   },
   matchedBox: {
     backgroundColor: '#AAF0AA',
-  
-    
-   
   },
-  
   definitionBox: {
     backgroundColor: '#FFF8D1',
     padding: 10,
     borderRadius: 8,
-    
-    marginBottom: 10, 
+    marginBottom: 10,
     alignItems: 'center',
   },
   definitionImage: {
@@ -187,8 +188,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginTop: 5,
     color: '#008000',
-    fontFamily: 'Poppins',
+    fontFamily: 'Poppins', // Updated font family
   },
   definitionsContainer: {},
-
 });

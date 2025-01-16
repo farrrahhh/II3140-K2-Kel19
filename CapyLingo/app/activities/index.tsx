@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import * as Font from 'expo-font'; // Import expo-font for font loading
 
 interface Word {
   id: string;
@@ -18,6 +19,7 @@ interface Definition {
 
 const ActivitiesVocabularyGame: React.FC = () => {
   const router = useRouter();
+  const [fontsLoaded, setFontsLoaded] = useState(false); // State for font loading
 
   // Words
   const [words, setWords] = useState<Word[]>([
@@ -33,56 +35,55 @@ const ActivitiesVocabularyGame: React.FC = () => {
     { id: 'def3', word: 'Skipping Rope', image: require('../../assets/images/skipping-rope.png'), matched: false },
   ]);
 
-  // The currently selected word
   const [selectedWord, setSelectedWord] = useState<Word | null>(null);
 
-  /**
-   * Called when the user taps a word in the list
-   */
+  useEffect(() => {
+    // Load custom fonts using expo-font
+    const loadFonts = async () => {
+      try {
+        await Font.loadAsync({
+          Poppins: require('../../assets/fonts/Poppins-Regular.ttf'),
+          'Poppins-Bold': require('../../assets/fonts/Poppins-Bold.ttf'),
+        });
+        setFontsLoaded(true);
+      } catch (error) {
+        console.error('Error loading fonts:', error);
+      }
+    };
+
+    loadFonts();
+  }, []);
+
   const handleWordPress = (word: Word) => {
     if (!word.matched) {
       setSelectedWord(word);
     }
   };
 
-  /**
-   * Called when the user taps a definition (image)
-   */
   const handleDefinitionPress = (definition: Definition) => {
     if (selectedWord && !definition.matched) {
-      // Check if they match
       if (selectedWord.text === definition.word) {
-        // Mark both matched
         setWords((prevWords) =>
-          prevWords.map((w) =>
-            w.id === selectedWord.id ? { ...w, matched: true } : w
-          )
+          prevWords.map((w) => (w.id === selectedWord.id ? { ...w, matched: true } : w))
         );
         setDefinitions((prevDefs) =>
-          prevDefs.map((d) =>
-            d.id === definition.id ? { ...d, matched: true } : d
-          )
+          prevDefs.map((d) => (d.id === definition.id ? { ...d, matched: true } : d))
         );
       }
-      // Reset the selection
       setSelectedWord(null);
     }
   };
 
-  /**
-   * Go to a different page (e.g. your 'belajar' page)
-   */
-  const redirectToLevelPage = () => {
-    router.replace('/belajar');
-  };
+  if (!fontsLoaded) {
+    return null; // Render nothing until fonts are loaded
+  }
 
   return (
     <View style={styles.container}>
-       <View style={styles.header}>
+      <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
           <Ionicons name="arrow-back" size={24} color="#333" />
         </TouchableOpacity>
-        
       </View>
 
       {/* Title */}
@@ -142,8 +143,6 @@ const styles = StyleSheet.create({
     paddingTop: 40,
     paddingHorizontal: 20,
   },
-  /* Header */
- 
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -152,61 +151,41 @@ const styles = StyleSheet.create({
   backButton: {
     marginRight: 10,
   },
-  logo: {
-    width: 40,
-    height: 40,
-  },
-  logoText: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginLeft: 10,
-  },
-  /* Title */
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 20,
     marginTop: 40,
-    fontFamily: 'Poppins',
+    fontFamily: 'Poppins-Bold', // Updated font
   },
-  /* Words Container (Vertical Stack) */
   wordsContainer: {
-    marginBottom: 30, // Add space before images section
-    
+    marginBottom: 30,
   },
   wordBox: {
     backgroundColor: '#FFD09B',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 8,
-    
-    marginBottom: 10, // Vertical spacing
+    marginBottom: 10,
     alignItems: 'center',
   },
   wordText: {
     fontSize: 18,
-    
-    fontFamily: 'Poppins',
+    fontFamily: 'Poppins', // Updated font
   },
   selectedBox: {
     borderRadius: 8,
-    
     backgroundColor: '#FFAB4D',
   },
   matchedBox: {
     backgroundColor: '#AAF0AA',
-  
-    
-   
   },
-  
   definitionBox: {
     backgroundColor: '#FFF8D1',
     padding: 10,
     borderRadius: 8,
-    
-    marginBottom: 10, 
+    marginBottom: 10,
     alignItems: 'center',
   },
   definitionImage: {
@@ -218,8 +197,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginTop: 5,
     color: '#008000',
-    fontFamily: 'Poppins',
+    fontFamily: 'Poppins', // Updated font
   },
   definitionsContainer: {},
-
 });
