@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
   Modal,
   SafeAreaView,
+  Image,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter, SearchParams } from 'expo-router';
@@ -172,9 +173,12 @@ const Quiz: React.FC = () => {
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-            <Ionicons name="arrow-back" size={24} color="#333" />
-          </TouchableOpacity>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+          <Image
+            source={require('../../assets/images/arrow.png')} 
+            style={styles.backIcon} 
+          />
+        </TouchableOpacity>
         </View>
 
         <Text style={styles.title}>Bacalah dan jawab pertanyaannya!</Text>
@@ -393,6 +397,11 @@ const styles = StyleSheet.create({
     color: '#FFF',
     fontSize: 16,
     textAlign: 'center',
+  },
+  backIcon: {
+    width: 24, // Adjust the size as needed
+    height: 24, // Adjust the size as needed
+    resizeMode: 'contain', // Ensure the image scales proportionally
   },
 });
 

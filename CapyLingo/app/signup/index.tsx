@@ -14,7 +14,6 @@ import {
   Image,
   ActivityIndicator,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import * as Font from 'expo-font'; // For font loading
 
@@ -120,7 +119,10 @@ const Signup = () => {
               {errorMessage ? <Text style={styles.errorMessage}>{errorMessage}</Text> : null}
 
               <View style={styles.inputContainer}>
-                <Ionicons name="person-outline" size={24} color="#888" style={styles.inputIcon} />
+                <Image
+                  source={require('../../assets/images/profilepict.png')}
+                  style={styles.inputIconImage}
+                />
                 <TextInput
                   style={styles.input}
                   placeholder="Username"
@@ -131,7 +133,10 @@ const Signup = () => {
               </View>
 
               <View style={styles.inputContainer}>
-                <Ionicons name="lock-closed-outline" size={24} color="#888" style={styles.inputIcon} />
+                <Image
+                  source={require('../../assets/images/lock.png')}
+                  style={styles.inputIconImage}
+                />
                 <TextInput
                   style={styles.input}
                   placeholder="Password"
@@ -144,10 +149,9 @@ const Signup = () => {
                   onPress={() => setIsPasswordVisible(!isPasswordVisible)}
                   style={styles.eyeIcon}
                 >
-                  <Ionicons
-                    name={isPasswordVisible ? 'eye-off-outline' : 'eye-outline'}
-                    size={24}
-                    color="#888"
+                  <Image
+                    source={require('../../assets/images/eye.png')}
+                    style={styles.eyeIconImage}
                   />
                 </TouchableOpacity>
               </View>
@@ -168,11 +172,19 @@ const Signup = () => {
     </SafeAreaView>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FFB0B0',
+  },
+  inputIconImage: {
+    width: 24,
+    height: 24,
+    marginRight: 10,
+  },
+  eyeIconImage: {
+    width: 24,
+    height: 24,
   },
   scrollContainer: {
     flexGrow: 1,

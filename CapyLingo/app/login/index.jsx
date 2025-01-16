@@ -15,7 +15,6 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Font from 'expo-font'; // Import font loader
 
@@ -122,7 +121,10 @@ const Login = () => {
               </Text>
               {errorMessage ? <Text style={styles.errorMessage}>{errorMessage}</Text> : null}
               <View style={styles.inputContainer}>
-                <Ionicons name="person-outline" size={24} color="#888" style={styles.inputIcon} />
+                <Image
+                  source={require('../../assets/images/profilepict.png')}
+                  style={styles.inputIconImage}
+                />
                 <TextInput
                   style={styles.input}
                   placeholder="Username"
@@ -132,7 +134,10 @@ const Login = () => {
                 />
               </View>
               <View style={styles.inputContainer}>
-                <Ionicons name="lock-closed-outline" size={24} color="#888" style={styles.inputIcon} />
+                <Image
+                  source={require('../../assets/images/lock.png')}
+                  style={styles.inputIconImage}
+                />
                 <TextInput
                   style={styles.input}
                   placeholder="Password"
@@ -145,10 +150,13 @@ const Login = () => {
                   onPress={() => setIsPasswordVisible(!isPasswordVisible)}
                   style={styles.eyeIcon}
                 >
-                  <Ionicons
-                    name={isPasswordVisible ? 'eye-off-outline' : 'eye-outline'}
-                    size={24}
-                    color="#888"
+                  <Image
+                    source={
+                      isPasswordVisible
+                        ? require('../../assets/images/eye.png')
+                        : require('../../assets/images/eye.png')
+                    }
+                    style={styles.eyeIconImage}
                   />
                 </TouchableOpacity>
               </View>
@@ -234,6 +242,15 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     fontFamily: 'Poppins',
     textAlign: 'center',
+  },
+  inputIconImage: {
+    width: 24,
+    height: 24,
+    marginRight: 10,
+  },
+  eyeIconImage: {
+    width: 24,
+    height: 24,
   },
   inputContainer: {
     flexDirection: 'row',
