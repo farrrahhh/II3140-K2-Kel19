@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import {
   View,
@@ -11,6 +12,7 @@ import {
   TextInput,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 
 const Profile = () => {
@@ -44,6 +46,54 @@ const Profile = () => {
     fetchUserData();
   }, []);
 
+  const handlePasswordChange = async () => {
+    if (!oldPassword || !newPassword) {
+      alert('Error: All fields are required.');
+      return;
+    }
+
+    if (oldPassword === newPassword) {
+      alert('Error: New password cannot be the same as old password.');
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        'https://capy-lingo-backend.vercel.app/api/change-password',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ username, oldPassword, newPassword }),
+        }
+      );
+
+      const result = await response.json();
+
+      if (response.ok) {
+        alert('Password changed successfully!');
+        setModalVisible(false);
+        setOldPassword('');
+        setNewPassword('');
+      } else {
+        alert(result.message || 'Failed to change password.');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('An error occurred. Please try again.');
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await AsyncStorage.clear();
+      router.replace('/login');
+    } catch (error) {
+      console.error('Failed to logout:', error);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
@@ -63,18 +113,12 @@ const Profile = () => {
 
           <View style={styles.statsContainer}>
             <View style={styles.statItem}>
-              <Image
-                source={require('../../assets/images/flame.png')}
-                style={styles.statIcon}
-              />
+              <Ionicons name="flame" size={24} color="#FF6B6B" />
               <Text style={styles.statValue}>{streak}</Text>
               <Text style={styles.statLabel}>Day Streak</Text>
             </View>
             <View style={styles.statItem}>
-              <Image
-                source={require('../../assets/images/starpict.png')}
-                style={styles.statIcon}
-              />
+              <Ionicons name="star" size={24} color="#FFD700" />
               <Text style={styles.statValue}>{xp}</Text>
               <Text style={styles.statLabel}>Total XP</Text>
             </View>
@@ -84,6 +128,7 @@ const Profile = () => {
             style={styles.button}
             onPress={() => setModalVisible(true)}
           >
+            <Ionicons name="lock-closed" size={20} color="#FFF" style={styles.buttonIcon} />
             <Text style={styles.buttonText}>Change Password</Text>
           </TouchableOpacity>
 
@@ -91,9 +136,82 @@ const Profile = () => {
             style={styles.logoutButton}
             onPress={() => setLogoutModalVisible(true)}
           >
+            <Ionicons name="log-out" size={20} color="#FFF" style={styles.buttonIcon} />
             <Text style={styles.logoutButtonText}>Logout</Text>
           </TouchableOpacity>
         </ScrollView>
+
+        {/* Change Password Modal */}
+        <Modal
+          visible={isModalVisible}
+          animationType="slide"
+          transparent={true}
+          onRequestClose={() => setModalVisible(false)}
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.modal}>
+              <Text style={styles.modalTitle}>Change Password</Text>
+
+              <TextInput
+                placeholder="Old Password"
+                value={oldPassword}
+                onChangeText={setOldPassword}
+                secureTextEntry
+                style={styles.input}
+              />
+              <TextInput
+                placeholder="New Password"
+                value={newPassword}
+                onChangeText={setNewPassword}
+                secureTextEntry
+                style={styles.input}
+              />
+
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={handlePasswordChange}
+              >
+                <Text style={styles.modalButtonText}>Submit</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.modalButton, styles.cancelButton]}
+                onPress={() => setModalVisible(false)}
+              >
+                <Text style={styles.modalButtonText}>Cancel</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+
+        {/* Logout Confirmation Modal */}
+        <Modal
+          visible={logoutModalVisible}
+          animationType="fade"
+          transparent={true}
+          onRequestClose={() => setLogoutModalVisible(false)}
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.modal}>
+              <Text style={styles.modalTitle}>Confirm Logout</Text>
+              <Text style={styles.modalText}>Are you sure you want to logout?</Text>
+
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={handleLogout}
+              >
+                <Text style={styles.modalButtonText}>Yes</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.modalButton, styles.cancelButton]}
+                onPress={() => setLogoutModalVisible(false)}
+              >
+                <Text style={styles.modalButtonText}>Cancel</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
       </View>
     </SafeAreaView>
   );
@@ -153,11 +271,6 @@ const styles = StyleSheet.create({
   statItem: {
     alignItems: 'center',
   },
-  statIcon: {
-    width: 40,
-    height: 40,
-    marginBottom: 8,
-  },
   statValue: {
     fontSize: 24,
     fontWeight: 'bold',
@@ -171,12 +284,17 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins-Regular',
   },
   button: {
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: '#FFB0B0',
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 30,
     marginBottom: 16,
     width: '80%',
+  },
+  buttonIcon: {
+    marginRight: 10,
   },
   buttonText: {
     color: '#FFF',
@@ -185,6 +303,8 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins-Medium',
   },
   logoutButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: '#FF6B6B',
     paddingVertical: 12,
     paddingHorizontal: 20,
@@ -196,6 +316,59 @@ const styles = StyleSheet.create({
     color: '#FFF',
     fontSize: 16,
     fontWeight: 'bold',
+    fontFamily: 'Poppins-Medium',
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    
+  },
+  modal: {
+    width: '85%',
+    backgroundColor: '#FFF',
+    borderRadius: 10,
+    padding: 20,
+    alignItems: 'center',
+    maxWidth: 400,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    fontFamily: 'Poppins-SemiBold',
+    color: '#333',
+  },
+  input: {
+    width: '100%',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    padding: 10,
+    marginBottom: 15,
+    fontFamily: 'Poppins-Regular',
+  },
+  modalText: {
+    fontSize: 16,
+    color: '#666',
+    fontFamily: 'Poppins-Regular',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  modalButton: {
+    backgroundColor: '#FFB0B0',
+    padding: 10,
+    borderRadius: 8,
+    alignItems: 'center',
+    width: '100%',
+    marginBottom: 10,
+  },
+  cancelButton: {
+    backgroundColor: '#FF6B6B',
+  },
+  modalButtonText: {
+    color: '#FFF',
     fontFamily: 'Poppins-Medium',
   },
 });
