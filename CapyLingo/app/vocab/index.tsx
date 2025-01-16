@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingBottom: 40,
     alignItems: 'center',
-    marginTop: 20,
+    marginTop: 50,
   },
   spacer: {
     height: 20, // Add space at the top

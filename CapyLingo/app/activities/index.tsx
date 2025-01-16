@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 
 interface Word {
   id: string;
@@ -77,6 +78,12 @@ const ActivitiesVocabularyGame: React.FC = () => {
 
   return (
     <View style={styles.container}>
+       <View style={styles.header}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+          <Ionicons name="arrow-back" size={24} color="#333" />
+        </TouchableOpacity>
+        
+      </View>
 
       {/* Title */}
       <Text style={styles.title}>Tap the word, then tap the picture!</Text>
@@ -129,85 +136,90 @@ export default ActivitiesVocabularyGame;
 /* ========== STYLES ========== */
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: '#ffb0b0',
-      paddingTop: 40,
-      paddingHorizontal: 20,
-    },
-    /* Header */
-    header: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      marginBottom: 20,
-    },
-    logo: {
-      width: 40,
-      height: 40,
-    },
-    logoText: {
-      fontSize: 24,
-      fontWeight: 'bold',
-      marginLeft: 10,
-    },
-    /* Title */
-    title: {
-      fontSize: 24,
-      fontWeight: 'bold',
-      textAlign: 'center',
-      marginBottom: 20,
-      marginTop: 40,
-      fontFamily: 'Poppins',
-    },
-    /* Words Container (Vertical Stack) */
-    wordsContainer: {
-      marginBottom: 30, // Add space before images section
-    },
-    wordBox: {
-      backgroundColor: '#FFD09B',
-      paddingVertical: 10,
-      paddingHorizontal: 20,
-      borderRadius: 8,
-      borderWidth: 2,
-      borderColor: '#333',
-      marginBottom: 10, // Vertical spacing
-      alignItems: 'center',
-    },
-    wordText: {
-      fontSize: 18,
-      fontWeight: 'bold',
-      fontFamily: 'Poppins',
-    },
-    selectedBox: {
-      borderColor: '#009688', // highlight color when selected
-      borderWidth: 4,
-    },
-    matchedBox: {
-      backgroundColor: '#AAF0AA',
-      borderColor: '#008000',
-    },
-    /* Definitions Container (Vertical Stack) */
-    definitionsContainer: {
-      // you could also set alignItems: 'center' if you want them centered
-    },
-    definitionBox: {
-      backgroundColor: '#FFD09B',
-      padding: 10,
-      borderRadius: 8,
-      borderWidth: 2,
-      borderColor: '#333',
-      marginBottom: 10, // vertical spacing
-      alignItems: 'center',
-    },
-    definitionImage: {
-      width: 80,
-      height: 80,
-    },
-    matchedWord: {
-      fontSize: 16,
-      fontWeight: 'bold',
-      marginTop: 5,
-      color: '#008000',
-      fontFamily: 'Poppins',
-    },
-  });
+  container: {
+    flex: 1,
+    backgroundColor: '#ffb0b0',
+    paddingTop: 40,
+    paddingHorizontal: 20,
+  },
+  /* Header */
+ 
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  backButton: {
+    marginRight: 10,
+  },
+  logo: {
+    width: 40,
+    height: 40,
+  },
+  logoText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginLeft: 10,
+  },
+  /* Title */
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 20,
+    marginTop: 40,
+    fontFamily: 'Poppins',
+  },
+  /* Words Container (Vertical Stack) */
+  wordsContainer: {
+    marginBottom: 30, // Add space before images section
+    
+  },
+  wordBox: {
+    backgroundColor: '#FFD09B',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    
+    marginBottom: 10, // Vertical spacing
+    alignItems: 'center',
+  },
+  wordText: {
+    fontSize: 18,
+    
+    fontFamily: 'Poppins',
+  },
+  selectedBox: {
+    borderRadius: 8,
+    
+    backgroundColor: '#FFAB4D',
+  },
+  matchedBox: {
+    backgroundColor: '#AAF0AA',
+  
+    
+   
+  },
+  
+  definitionBox: {
+    backgroundColor: '#FFF8D1',
+    padding: 10,
+    borderRadius: 8,
+    
+    marginBottom: 10, 
+    alignItems: 'center',
+  },
+  definitionImage: {
+    width: 80,
+    height: 80,
+  },
+  matchedWord: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginTop: 5,
+    color: '#008000',
+    fontFamily: 'Poppins',
+  },
+  definitionsContainer: {},
+
+});

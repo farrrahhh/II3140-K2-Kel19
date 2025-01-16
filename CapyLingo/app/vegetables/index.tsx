@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 
 interface Word {
   id: string;
@@ -32,55 +33,41 @@ const VegetablesVocabularyGame: React.FC = () => {
     { id: 'def3', word: 'Celery', image: require('../../assets/images/celery.png'), matched: false },
   ]);
 
-  // The currently selected word
   const [selectedWord, setSelectedWord] = useState<Word | null>(null);
 
-  /**
-   * Called when the user taps a word in the list
-   */
   const handleWordPress = (word: Word) => {
     if (!word.matched) {
       setSelectedWord(word);
     }
   };
 
-  /**
-   * Called when the user taps a definition (image)
-   */
   const handleDefinitionPress = (definition: Definition) => {
     if (selectedWord && !definition.matched) {
-      // Check if they match
       if (selectedWord.text === definition.word) {
-        // Mark both matched
         setWords((prevWords) =>
-          prevWords.map((w) =>
-            w.id === selectedWord.id ? { ...w, matched: true } : w
-          )
+          prevWords.map((w) => (w.id === selectedWord.id ? { ...w, matched: true } : w))
         );
         setDefinitions((prevDefs) =>
-          prevDefs.map((d) =>
-            d.id === definition.id ? { ...d, matched: true } : d
-          )
+          prevDefs.map((d) => (d.id === definition.id ? { ...d, matched: true } : d))
         );
       }
-      // Reset the selection
       setSelectedWord(null);
     }
   };
 
-  /**
-   * Go to a different page (e.g. your 'belajar' page)
-   */
-  const redirectToLevelPage = () => {
-    router.replace('/belajar');
-  };
-
   return (
     <View style={styles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+          <Ionicons name="arrow-back" size={24} color="#333" />
+        </TouchableOpacity>
+        
+      </View>
+
       {/* Title */}
       <Text style={styles.title}>Tap the word, then tap the picture!</Text>
 
-      {/* Words Section (Vertical) */}
+      {/* Words Section */}
       <View style={styles.wordsContainer}>
         {words.map((word) => (
           <TouchableOpacity
@@ -88,9 +75,7 @@ const VegetablesVocabularyGame: React.FC = () => {
             style={[
               styles.wordBox,
               word.matched ? styles.matchedBox : null,
-              selectedWord?.id === word.id && !word.matched
-                ? styles.selectedBox
-                : null,
+              selectedWord?.id === word.id && !word.matched ? styles.selectedBox : null,
             ]}
             onPress={() => handleWordPress(word)}
           >
@@ -99,22 +84,15 @@ const VegetablesVocabularyGame: React.FC = () => {
         ))}
       </View>
 
-      {/* Images Section (Vertical) */}
+      {/* Images Section */}
       <View style={styles.definitionsContainer}>
         {definitions.map((def) => (
           <TouchableOpacity
             key={def.id}
-            style={[
-              styles.definitionBox,
-              def.matched ? styles.matchedBox : null,
-            ]}
+            style={[styles.definitionBox, def.matched ? styles.matchedBox : null]}
             onPress={() => handleDefinitionPress(def)}
           >
-            <Image
-              source={def.image}
-              style={styles.definitionImage}
-              resizeMode="contain"
-            />
+            <Image source={def.image} style={styles.definitionImage} resizeMode="contain" />
             {def.matched && <Text style={styles.matchedWord}>{def.word}</Text>}
           </TouchableOpacity>
         ))}
@@ -124,7 +102,6 @@ const VegetablesVocabularyGame: React.FC = () => {
 };
 
 export default VegetablesVocabularyGame;
-
 /* ========== STYLES ========== */
 
 const styles = StyleSheet.create({
@@ -135,10 +112,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   /* Header */
+ 
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 20,
+    marginTop: 20,
+  },
+  backButton: {
+    marginRight: 10,
   },
   logo: {
     width: 40,
@@ -161,41 +142,40 @@ const styles = StyleSheet.create({
   /* Words Container (Vertical Stack) */
   wordsContainer: {
     marginBottom: 30, // Add space before images section
+    
   },
   wordBox: {
     backgroundColor: '#FFD09B',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 8,
-    borderWidth: 2,
-    borderColor: '#333',
+    
     marginBottom: 10, // Vertical spacing
     alignItems: 'center',
   },
   wordText: {
     fontSize: 18,
-    fontWeight: 'bold',
+    
     fontFamily: 'Poppins',
   },
   selectedBox: {
-    borderColor: '#009688', // highlight color when selected
-    borderWidth: 4,
+    borderRadius: 8,
+    
+    backgroundColor: '#FFAB4D',
   },
   matchedBox: {
     backgroundColor: '#AAF0AA',
-    borderColor: '#008000',
+  
+    
+   
   },
-  /* Definitions Container (Vertical Stack) */
-  definitionsContainer: {
-    // you could also set alignItems: 'center' if you want them centered
-  },
+  
   definitionBox: {
-    backgroundColor: '#FFD09B',
+    backgroundColor: '#FFF8D1',
     padding: 10,
     borderRadius: 8,
-    borderWidth: 2,
-    borderColor: '#333',
-    marginBottom: 10, // vertical spacing
+    
+    marginBottom: 10, 
     alignItems: 'center',
   },
   definitionImage: {
@@ -209,4 +189,6 @@ const styles = StyleSheet.create({
     color: '#008000',
     fontFamily: 'Poppins',
   },
+  definitionsContainer: {},
+
 });

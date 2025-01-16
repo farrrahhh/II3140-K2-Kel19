@@ -192,16 +192,15 @@ const styles = StyleSheet.create({
     selectedBox: {
       borderRadius: 8,
       
-      backgroundColor: '#FFF8D1',
+      backgroundColor: '#FFAB4D',
     },
     matchedBox: {
       backgroundColor: '#AAF0AA',
+    
+      
      
     },
-    /* Definitions Container (Vertical Stack) */
-    definitionsContainer: {
-      // you could also set alignItems: 'center' if you want them centered
-    },
+    
     definitionBox: {
       backgroundColor: '#FFF8D1',
       padding: 10,
@@ -221,4 +220,6 @@ const styles = StyleSheet.create({
       color: '#008000',
       fontFamily: 'Poppins',
     },
+    definitionsContainer: {},
+
   });
