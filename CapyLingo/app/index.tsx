@@ -29,8 +29,9 @@ const App: React.FC = () => {
           setShowSplash(true);
           await AsyncStorage.setItem('hasLaunched', 'true');
         } else {
+          setShowSplash(true);
           // Check authentication on subsequent launches
-          checkAuth();
+          // checkAuth();
         }
       } catch (error) {
         console.error('Error initializing app:', error);
