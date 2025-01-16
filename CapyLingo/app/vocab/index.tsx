@@ -80,6 +80,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 6,
     elevation: 5,
+    maxWidth: 600,
   },
   cardFruits: {
     backgroundColor: '#FFD09B', // Light orange for Fruits

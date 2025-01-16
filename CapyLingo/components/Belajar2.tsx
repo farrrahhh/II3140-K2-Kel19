@@ -11,10 +11,12 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
+import * as Font from 'expo-font'; // Import expo-font
 
 const Belajar2 = () => {
   const [username, setUsername] = useState<string>('User');
   const [level, setLevel] = useState<number>(2); // Default level 2
+  const [fontsLoaded, setFontsLoaded] = useState(false); // Font loading state
   const router = useRouter();
 
   // Animasi naik-turun untuk level 2
@@ -34,6 +36,23 @@ const Belajar2 = () => {
     };
 
     fetchUserData();
+  }, []);
+
+  useEffect(() => {
+    // Load fonts using expo-font
+    const loadFonts = async () => {
+      try {
+        await Font.loadAsync({
+          'Poppins-Bold': require('../assets/fonts/Poppins-Bold.ttf'),
+          'Poppins-Regular': require('../assets/fonts/Poppins-Regular.ttf'),
+        });
+        setFontsLoaded(true);
+      } catch (error) {
+        console.error('Error loading fonts:', error);
+      }
+    };
+
+    loadFonts();
   }, []);
 
   useEffect(() => {
@@ -79,24 +98,24 @@ const Belajar2 = () => {
         >
           {isActive ? (
             <TouchableOpacity
-            style={styles.touchableArea}
-            onPress={async () => {
-              await AsyncStorage.setItem('level_quiz', item.id.toString()); // Simpan level quiz sementara
-              router.push(`/quiz?level=${item.id}`); // Arahkan ke halaman quiz dengan query level
-            }}
-            disabled={item.id > level} // Hanya aktifkan tombol jika level quiz <= level user
-          >
-            <Animated.View
-              style={[
-                styles.outerCircle,
-                isAnimating && { transform: [{ translateY: animation }] },
-              ]}
+              style={styles.touchableArea}
+              onPress={async () => {
+                await AsyncStorage.setItem('level_quiz', item.id.toString()); // Simpan level quiz sementara
+                router.push(`/quiz?level=${item.id}`); // Arahkan ke halaman quiz dengan query level
+              }}
+              disabled={item.id > level} // Hanya aktifkan tombol jika level quiz <= level user
             >
-              <View style={styles.levelCircle}>
-                <Image source={item.image} style={styles.levelImage} />
-              </View>
-            </Animated.View>
-          </TouchableOpacity>
+              <Animated.View
+                style={[
+                  styles.outerCircle,
+                  isAnimating && { transform: [{ translateY: animation }] },
+                ]}
+              >
+                <View style={styles.levelCircle}>
+                  <Image source={item.image} style={styles.levelImage} />
+                </View>
+              </Animated.View>
+            </TouchableOpacity>
           ) : (
             <View style={[styles.levelCircle, styles.inactiveLevel]}>
               <Image source={item.image} style={styles.levelImage} />
@@ -106,6 +125,10 @@ const Belajar2 = () => {
       );
     });
   };
+
+  if (!fontsLoaded) {
+    return null; // Render nothing until fonts are loaded
+  }
 
   return (
     <SafeAreaView style={styles.container}>

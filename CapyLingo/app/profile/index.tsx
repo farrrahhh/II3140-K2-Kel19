@@ -322,6 +322,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    
   },
   modal: {
     width: '85%',
@@ -329,6 +330,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 20,
     alignItems: 'center',
+    maxWidth: 400,
   },
   modalTitle: {
     fontSize: 18,

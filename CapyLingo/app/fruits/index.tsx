@@ -174,6 +174,7 @@ const styles = StyleSheet.create({
     wordsContainer: {
       marginBottom: 30, // Add space before images section
       
+
     },
     wordBox: {
       backgroundColor: '#FFD09B',

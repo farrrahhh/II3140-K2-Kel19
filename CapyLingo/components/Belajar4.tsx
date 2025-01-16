@@ -11,10 +11,12 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
+import * as Font from 'expo-font'; // Import expo-font
 
 const Belajar4 = () => {
   const [username, setUsername] = useState<string>('User');
   const [level, setLevel] = useState<number>(4); // Default level 4
+  const [fontsLoaded, setFontsLoaded] = useState(false); // Font loading state
   const router = useRouter();
 
   // Animasi naik-turun untuk level 4
@@ -34,6 +36,23 @@ const Belajar4 = () => {
     };
 
     fetchUserData();
+  }, []);
+
+  useEffect(() => {
+    // Load fonts using expo-font
+    const loadFonts = async () => {
+      try {
+        await Font.loadAsync({
+          'Poppins-Bold': require('../assets/fonts/Poppins-Bold.ttf'),
+          'Poppins-Regular': require('../assets/fonts/Poppins-Regular.ttf'),
+        });
+        setFontsLoaded(true);
+      } catch (error) {
+        console.error('Error loading fonts:', error);
+      }
+    };
+
+    loadFonts();
   }, []);
 
   useEffect(() => {
@@ -106,6 +125,10 @@ const Belajar4 = () => {
       );
     });
   };
+
+  if (!fontsLoaded) {
+    return null; // Render nothing until fonts are loaded
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -220,7 +243,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 3,
-    borderColor: '#ffd09b', // Warna kuning untuk level aktif (1, 2, 3, dan 4)
+    borderColor: '#ffd09b', // Warna kuning untuk level aktif
   },
   levelCircle: {
     width: 100,

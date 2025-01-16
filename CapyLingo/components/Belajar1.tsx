@@ -11,13 +11,15 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
+import * as Font from 'expo-font'; // Import expo-font
 
 const Belajar1 = () => {
   const [username, setUsername] = useState<string>('User');
   const [level, setLevel] = useState<number>(1); // Default level
+  const [fontsLoaded, setFontsLoaded] = useState(false); // Font loader state
   const router = useRouter();
 
-  // Animasi naik-turun
+  // Animation for level
   const animation = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -37,7 +39,24 @@ const Belajar1 = () => {
   }, []);
 
   useEffect(() => {
-    // Mulai animasi jika ada level yang aktif
+    // Load fonts
+    const loadFonts = async () => {
+      try {
+        await Font.loadAsync({
+          'Poppins-Bold': require('../assets/fonts/Poppins-Bold.ttf'),
+          'Poppins-Regular': require('../assets/fonts/Poppins-Regular.ttf'),
+        });
+        setFontsLoaded(true); // Fonts loaded
+      } catch (error) {
+        console.error('Error loading fonts:', error);
+      }
+    };
+
+    loadFonts();
+  }, []);
+
+  useEffect(() => {
+    // Animation for active level
     Animated.loop(
       Animated.sequence([
         Animated.timing(animation, {
@@ -75,7 +94,6 @@ const Belajar1 = () => {
           }}
         >
           {isActive ? (
-            // Jika aktif, tampilkan lingkaran luar dan inner dengan animasi
             <TouchableOpacity
               style={styles.touchableArea}
               onPress={() => router.push(`/quiz?level=${item.id}`)}
@@ -94,7 +112,6 @@ const Belajar1 = () => {
               </Animated.View>
             </TouchableOpacity>
           ) : (
-            // Jika tidak aktif, tampilkan ikon tanpa lingkaran luar dan tidak bisa dipencet
             <View style={[styles.levelCircle, styles.inactiveLevel]}>
               <Image source={item.image} style={styles.levelImage} />
             </View>
@@ -104,10 +121,13 @@ const Belajar1 = () => {
     });
   };
 
+  if (!fontsLoaded) {
+    return null; // Render nothing until fonts are loaded
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        {/* Mantra Card */}
         <View style={styles.mantraCard}>
           <Text style={styles.greeting}>Hello {username}!</Text>
           <View style={styles.mantraContent}>
@@ -127,7 +147,6 @@ const Belajar1 = () => {
           </View>
         </View>
 
-        {/* Levels Section */}
         <View style={styles.levelSection}>{renderLevelIcons()}</View>
       </ScrollView>
     </SafeAreaView>
@@ -150,7 +169,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 20,
     borderWidth: 2,
-    borderColor: '#FFB0B0', 
+    borderColor: '#FFB0B0',
     shadowColor: '#FFB0B0',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
@@ -217,7 +236,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 3,
-    borderColor: '#fff7d1', 
+    borderColor: '#fff7d1',
   },
   levelCircle: {
     width: 100,
@@ -225,10 +244,10 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#ffd09b', 
+    backgroundColor: '#ffd09b',
   },
   inactiveLevel: {
-    backgroundColor: '#ccc', 
+    backgroundColor: '#ccc',
   },
   levelImage: {
     width: 70,

@@ -11,10 +11,12 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
+import * as Font from 'expo-font'; // Import expo-font
 
 const Belajar3 = () => {
   const [username, setUsername] = useState<string>('User');
   const [level, setLevel] = useState<number>(3); // Default level 3
+  const [fontsLoaded, setFontsLoaded] = useState(false); // Font loading state
   const router = useRouter();
 
   // Animasi naik-turun untuk level 3
@@ -34,6 +36,23 @@ const Belajar3 = () => {
     };
 
     fetchUserData();
+  }, []);
+
+  useEffect(() => {
+    // Load fonts using expo-font
+    const loadFonts = async () => {
+      try {
+        await Font.loadAsync({
+          'Poppins-Bold': require('../assets/fonts/Poppins-Bold.ttf'),
+          'Poppins-Regular': require('../assets/fonts/Poppins-Regular.ttf'),
+        });
+        setFontsLoaded(true);
+      } catch (error) {
+        console.error('Error loading fonts:', error);
+      }
+    };
+
+    loadFonts();
   }, []);
 
   useEffect(() => {
@@ -106,6 +125,10 @@ const Belajar3 = () => {
       );
     });
   };
+
+  if (!fontsLoaded) {
+    return null; // Render nothing until fonts are loaded
+  }
 
   return (
     <SafeAreaView style={styles.container}>
