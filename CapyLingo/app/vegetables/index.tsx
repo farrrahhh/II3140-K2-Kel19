@@ -82,7 +82,10 @@ const VegetablesVocabularyGame: React.FC = () => {
     <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color="#333" />
+          <Image 
+            source={require('../../assets/images/arrow.png')} 
+            style={styles.arrowIcon} 
+          />
         </TouchableOpacity>
       </View>
 
@@ -133,6 +136,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffb0b0',
     paddingTop: 40,
     paddingHorizontal: 20,
+  },
+  arrowIcon: {
+    width: 24, 
+    height: 24, 
   },
   header: {
     flexDirection: 'row',

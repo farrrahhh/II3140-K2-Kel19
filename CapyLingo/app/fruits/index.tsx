@@ -101,9 +101,12 @@ const FruitsVocabularyGame: React.FC = () => {
     <View style={styles.container}>
       {/* Back Arrow Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color="#333" />
-        </TouchableOpacity>
+      <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+        <Image 
+          source={require('../../assets/images/arrow.png')} 
+          style={styles.arrowIcon} 
+        />
+      </TouchableOpacity>
       </View>
 
       {/* Title */}
@@ -218,6 +221,10 @@ const styles = StyleSheet.create({
     marginTop: 5,
     color: '#008000',
     fontFamily: 'Poppins',
+  },
+  arrowIcon: {
+    width: 24, 
+    height: 24, 
   },
   definitionsContainer: {},
 });

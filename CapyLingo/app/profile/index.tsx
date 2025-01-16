@@ -112,23 +112,31 @@ const Profile = () => {
           </View>
 
           <View style={styles.statsContainer}>
-            <View style={styles.statItem}>
-              <Ionicons name="flame" size={24} color="#FF6B6B" />
+          <View style={styles.statItem}>
+              <Image 
+                source={require('../../assets/images/flame.png')} 
+                style={styles.flameImage} 
+              />
               <Text style={styles.statValue}>{streak}</Text>
               <Text style={styles.statLabel}>Day Streak</Text>
             </View>
             <View style={styles.statItem}>
-              <Ionicons name="star" size={24} color="#FFD700" />
+              <Image 
+                source={require('../../assets/images/starpict.png')} 
+                style={styles.starImage} 
+              />
               <Text style={styles.statValue}>{xp}</Text>
               <Text style={styles.statLabel}>Total XP</Text>
             </View>
           </View>
-
           <TouchableOpacity
             style={styles.button}
             onPress={() => setModalVisible(true)}
           >
-            <Ionicons name="lock-closed" size={20} color="#FFF" style={styles.buttonIcon} />
+            <Image 
+              source={require('../../assets/images/lock1.png')} 
+              style={styles.lockIcon} 
+            />
             <Text style={styles.buttonText}>Change Password</Text>
           </TouchableOpacity>
 
@@ -136,7 +144,10 @@ const Profile = () => {
             style={styles.logoutButton}
             onPress={() => setLogoutModalVisible(true)}
           >
-            <Ionicons name="log-out" size={20} color="#FFF" style={styles.buttonIcon} />
+            <Image 
+              source={require('../../assets/images/out1.png')} 
+              style={styles.logoutIcon} 
+            />
             <Text style={styles.logoutButtonText}>Logout</Text>
           </TouchableOpacity>
         </ScrollView>
@@ -218,9 +229,29 @@ const Profile = () => {
 };
 
 const styles = StyleSheet.create({
+  flameImage: {
+    width: 24,
+    height: 24,
+    marginBottom: 5, 
+  },
+  starImage: {
+    width: 24, 
+    height: 24, 
+    marginBottom: 5,
+  },
+  lockIcon: {
+    width: 20, 
+    height: 20, 
+    marginRight: 8, 
+  },
   safeArea: {
     flex: 1,
     backgroundColor: '#FFF',
+  },
+  logoutIcon: {
+    width: 20, 
+    height: 20, 
+    marginRight: 8, 
   },
   container: {
     flex: 1,
