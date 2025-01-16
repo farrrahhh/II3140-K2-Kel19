@@ -149,8 +149,9 @@ const Quiz: React.FC = () => {
       if (response.ok) {
         await AsyncStorage.setItem('level', result.newLevel.toString());
         await AsyncStorage.setItem('xp', result.xp.toString());
-        router.replace('/belajar');
-      }
+        
+      } 
+      router.replace('/belajar');
     } catch (error) {
       console.error('Error submitting quiz result:', error);
     } finally {
@@ -202,6 +203,9 @@ const Quiz: React.FC = () => {
               </TouchableOpacity>
             ))}
           </View>
+          {selectedAnswer && !isCorrect && correctAnswer && (
+            <Text style={styles.correctAnswerText}>Correct Answer: {correctAnswer}</Text>
+          )}
         </View>
 
         <View style={styles.footer}>
@@ -349,6 +353,13 @@ const styles = StyleSheet.create({
     color: '#FFF',
     fontSize: 16,
     fontFamily: 'Poppins-Bold',
+  },
+  correctAnswerText: {
+    fontSize: 16,
+    fontFamily: 'Poppins-SemiBold',
+    color: '#FF0000',
+    marginTop: 10,
+    textAlign: 'center',
   },
   modalOverlay: {
     flex: 1,
