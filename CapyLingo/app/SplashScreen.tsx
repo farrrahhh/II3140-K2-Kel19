@@ -116,7 +116,6 @@ const SplashScreen = () => {
     </View>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -124,18 +123,19 @@ const styles = StyleSheet.create({
   },
   slide: {
     width,
+    height, // Ensure the slide takes the full height of the screen
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "center", // Centers content vertically
     padding: 20,
   },
   image: {
-    width: width * 0.8,
-    height: height * 0.4,
-    resizeMode: "contain",
-    marginBottom: 0,
+    width: width * 0.8, // Adjust width relative to screen width
+    height: height * 0.4, // Adjust height relative to screen height
+    resizeMode: "contain", // Keep image aspect ratio
+    alignSelf: "center", // Ensures the image is horizontally centered
   },
   title: {
-    fontFamily: 'Poppins-SemiBold', 
+    fontFamily: 'Poppins-SemiBold',
     fontSize: 28,
     fontWeight: "bold",
     color: "#333",
@@ -147,6 +147,7 @@ const styles = StyleSheet.create({
     color: "#555",
     textAlign: "center",
     fontFamily: 'Poppins-Light',
+    marginHorizontal: 20, // Add some padding for better readability
   },
   pagination: {
     flexDirection: "row",
