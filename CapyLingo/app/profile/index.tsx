@@ -28,7 +28,7 @@ const Profile = () => {
     try {
       const storedUsername = await AsyncStorage.getItem('username');
       const storedLevel = await AsyncStorage.getItem('level');
-      const storedStreak = await AsyncStorage.getItem('streak');
+      const storedStreak = await AsyncStorage.getItem('day_streak');
       const storedXp = await AsyncStorage.getItem('xp');
 
       if (storedUsername) setUsername(storedUsername);

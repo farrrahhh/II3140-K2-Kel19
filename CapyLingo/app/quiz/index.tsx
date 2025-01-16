@@ -150,6 +150,7 @@ const Quiz: React.FC = () => {
       const result = await response.json();
       if (response.ok) {
         await AsyncStorage.setItem('level', result.newLevel.toString());
+        await AsyncStorage.setItem('xp', result.xp.toString());
         Alert.alert('Quiz Complete', result.message, [
           { text: 'Go to Dashboard', onPress: () => router.replace('/belajar') },
         ]);

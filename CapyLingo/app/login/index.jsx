@@ -59,6 +59,8 @@ const Login = () => {
         await AsyncStorage.setItem('userId', result.userId.toString()); 
         await AsyncStorage.setItem('username', result.username);
         await AsyncStorage.setItem('level', result.level);
+        await AsyncStorage.setItem('xp', result.xp.toString());
+        await AsyncStorage.setItem('day_streak', result.day_streak.toString());
         
 
         router.replace('/belajar');
