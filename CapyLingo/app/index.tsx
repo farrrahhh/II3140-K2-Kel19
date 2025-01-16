@@ -20,7 +20,8 @@ const App: React.FC = () => {
           await AsyncStorage.setItem('hasLaunched', 'true');
         } else {
           // Jika sudah pernah dibuka, langsung cek token
-          checkAuth();
+          setShowSplash(true);
+          // checkAuth();
         }
       } catch (error) {
         console.error('Error checking first launch:', error);
