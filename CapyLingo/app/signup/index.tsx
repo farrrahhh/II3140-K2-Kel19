@@ -147,7 +147,7 @@ const Signup = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#FFB0B0',
   },
   scrollContainer: {
     flexGrow: 1,

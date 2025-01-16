@@ -133,6 +133,9 @@ const Login = () => {
                 </Text>
               </TouchableOpacity>
             </View>
+            <View style={styles.footer} >
+
+            </View>
           </Animated.View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -143,8 +146,9 @@ const Login = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#ffb0b0',
   },
+  
   scrollContainer: {
     flexGrow: 1,
   },
@@ -167,6 +171,9 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 30,
     marginTop: -30,
     flex: 1,
+    zIndex: 1,
+    
+    
     ...Platform.select({
       ios: {
         shadowColor: '#000',

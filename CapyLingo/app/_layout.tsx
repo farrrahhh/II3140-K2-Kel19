@@ -3,6 +3,7 @@ import { StatusBar } from 'expo-status-bar';
 import { View, StyleSheet } from 'react-native';
 import { Slot, useRouter, useSegments } from 'expo-router';
 import Navbar from '../components/Navbar'; // Import the Navbar component
+import NavbarWhite from '../components/WhiteNavbar';
 
 export default function Layout() {
   const router = useRouter();
@@ -10,6 +11,7 @@ export default function Layout() {
 
   // Check if the current route should show the navbar
   const showNavbar = ['/belajar', '/vocab', '/profile'].includes(`/${segments.join('/')}`);
+  const showNavbarWhite = ['/login', '/signup'].includes(`/${segments.join('/')}`);
 
   return (
     <View style={styles.container}>
@@ -18,6 +20,9 @@ export default function Layout() {
 
       {/* Conditionally render Navbar */}
       {showNavbar && <Navbar />}
+      {showNavbarWhite && <NavbarWhite />}
+
+      {/* <Navbar /> */}
     </View>
   );
 }
