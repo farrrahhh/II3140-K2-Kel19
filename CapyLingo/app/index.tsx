@@ -2,48 +2,41 @@ import React, { useEffect, useState } from 'react';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
-import * as Font from 'expo-font'; // Import font loader from expo
-import AppLoading from 'expo-app-loading'; // Optional for splash-like behavior
+import * as Font from 'expo-font'; // Import font loader
 import SplashScreen from './SplashScreen';
 
 const App: React.FC = () => {
-  const [showSplash, setShowSplash] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [fontsLoaded, setFontsLoaded] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState(true); // Overall loading state
+  const [fontsLoaded, setFontsLoaded] = useState(false); // Font loading state
+  const [showSplash, setShowSplash] = useState(false); // Splash screen state
   const router = useRouter();
 
-  // Load custom fonts asynchronously
-  const loadFonts = async () => {
-    await Font.loadAsync({
-      'Poppins-Regular': require('../assets/fonts/Poppins-Regular.ttf'),
-      'Poppins-Bold': require('../assets/fonts/Poppins-Bold.ttf'),
-      'Poppins-Italic': require('../assets/fonts/Poppins-Italic.ttf'),
-      
-    });
-    setFontsLoaded(true);
-  };
-
   useEffect(() => {
-    const checkFirstLaunch = async () => {
+    const initializeApp = async () => {
       try {
-        await loadFonts(); // Ensure fonts are loaded first
+        // Load custom fonts
+        await Font.loadAsync({
+          'Poppins-Regular': require('../assets/fonts/Poppins-Regular.ttf'),
+          'Poppins-Bold': require('../assets/fonts/Poppins-Bold.ttf'),
+          'Poppins-Italic': require('../assets/fonts/Poppins-Italic.ttf'),
+        });
+        setFontsLoaded(true);
 
         // Check if the app has launched before
         const hasLaunched = await AsyncStorage.getItem('hasLaunched');
-        if (hasLaunched === null) {
-          // If the app is launched for the first time, show splash screen
+        if (!hasLaunched) {
+          // First launch
           setShowSplash(true);
           await AsyncStorage.setItem('hasLaunched', 'true');
         } else {
-          // If not the first launch, check authentication
-          setShowSplash(true);
-          // checkAuth();
+          // Check authentication on subsequent launches
+          checkAuth();
         }
       } catch (error) {
-        console.error('Error checking first launch:', error);
+        console.error('Error initializing app:', error);
         router.replace('/login');
       } finally {
-        setIsLoading(false);
+        setIsLoading(false); // Ensure loading state is cleared
       }
     };
 
@@ -51,10 +44,10 @@ const App: React.FC = () => {
       try {
         const token = await AsyncStorage.getItem('token');
         if (token) {
-          // Navigate to the learning page if a token exists
+          // Navigate to the learning page if authenticated
           router.replace('/belajar');
         } else {
-          // Otherwise, navigate to the login page
+          // Navigate to login page if not authenticated
           router.replace('/login');
         }
       } catch (error) {
@@ -63,22 +56,11 @@ const App: React.FC = () => {
       }
     };
 
-    checkFirstLaunch();
+    initializeApp();
   }, [router]);
 
-  if (!fontsLoaded) {
-    // Display a loading indicator while fonts are being loaded
-    return (
-      <AppLoading
-        startAsync={loadFonts}
-        onFinish={() => setFontsLoaded(true)}
-        onError={(error) => console.error('Font loading error:', error)}
-      />
-    );
-  }
-
-  if (isLoading) {
-    // Show a loading indicator during initial checks
+  // Render loading indicator during initialization
+  if (isLoading || !fontsLoaded) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#4CAF50" />
@@ -86,12 +68,12 @@ const App: React.FC = () => {
     );
   }
 
+  // Show splash screen if needed
   if (showSplash) {
-    // Display splash screen if the app is launched for the first time
     return <SplashScreen />;
   }
 
-  return null; // Default fallback
+  return null; // Fallback if no state is set
 };
 
 const styles = StyleSheet.create({
