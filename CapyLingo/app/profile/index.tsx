@@ -5,7 +5,6 @@ import {
   StyleSheet,
   Image,
   TouchableOpacity,
-  Alert,
   ScrollView,
   SafeAreaView,
   Modal,
@@ -13,7 +12,7 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
-import { router } from 'expo-router';
+import { useRouter } from 'expo-router';
 
 const Profile = () => {
   const [username, setUsername] = useState<string>('User');
@@ -21,8 +20,10 @@ const Profile = () => {
   const [streak, setStreak] = useState<number>(0);
   const [xp, setXp] = useState<number>(0);
   const [isModalVisible, setModalVisible] = useState<boolean>(false);
+  const [logoutModalVisible, setLogoutModalVisible] = useState<boolean>(false);
   const [oldPassword, setOldPassword] = useState<string>('');
   const [newPassword, setNewPassword] = useState<string>('');
+  const router = useRouter();
 
   const fetchUserData = async () => {
     try {
@@ -46,12 +47,12 @@ const Profile = () => {
 
   const handlePasswordChange = async () => {
     if (!oldPassword || !newPassword) {
-      Alert.alert('Error', 'All fields are required.');
+      alert('Error: All fields are required.');
       return;
     }
 
     if (oldPassword === newPassword) {
-      Alert.alert('Error', 'New password cannot be the same as old password.');
+      alert('Error: New password cannot be the same as old password.');
       return;
     }
 
@@ -70,39 +71,27 @@ const Profile = () => {
       const result = await response.json();
 
       if (response.ok) {
-        Alert.alert('Success', 'Password changed successfully!');
+        alert('Password changed successfully!');
         setModalVisible(false);
         setOldPassword('');
         setNewPassword('');
       } else {
-        Alert.alert('Error', result.message || 'Failed to change password.');
+        alert(result.message || 'Failed to change password.');
       }
     } catch (error) {
       console.error('Error:', error);
-      Alert.alert('Error', 'An error occurred. Please try again.');
+      alert('An error occurred. Please try again.');
     }
   };
 
- // Logout handler
- const handleLogout = async () => {
-  Alert.alert('Logout', 'Are you sure you want to logout?', [
-    {
-      text: 'Cancel',
-      style: 'cancel',
-    },
-    {
-      text: 'Yes',
-      onPress: async () => {
-        try {
-          await AsyncStorage.clear();
-          router.replace('/login');
-        } catch (error) {
-          console.error('Failed to logout:', error);
-        }
-      },
-    },
-  ]);
-};
+  const handleLogout = async () => {
+    try {
+      await AsyncStorage.clear();
+      router.replace('/login');
+    } catch (error) {
+      console.error('Failed to logout:', error);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -142,7 +131,10 @@ const Profile = () => {
             <Text style={styles.buttonText}>Change Password</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+          <TouchableOpacity
+            style={styles.logoutButton}
+            onPress={() => setLogoutModalVisible(true)}
+          >
             <Ionicons name="log-out" size={20} color="#FFF" style={styles.buttonIcon} />
             <Text style={styles.logoutButtonText}>Logout</Text>
           </TouchableOpacity>
@@ -184,6 +176,35 @@ const Profile = () => {
               <TouchableOpacity
                 style={[styles.modalButton, styles.cancelButton]}
                 onPress={() => setModalVisible(false)}
+              >
+                <Text style={styles.modalButtonText}>Cancel</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+
+        {/* Logout Confirmation Modal */}
+        <Modal
+          visible={logoutModalVisible}
+          animationType="fade"
+          transparent={true}
+          onRequestClose={() => setLogoutModalVisible(false)}
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.modal}>
+              <Text style={styles.modalTitle}>Confirm Logout</Text>
+              <Text style={styles.modalText}>Are you sure you want to logout?</Text>
+
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={handleLogout}
+              >
+                <Text style={styles.modalButtonText}>Yes</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.modalButton, styles.cancelButton]}
+                onPress={() => setLogoutModalVisible(false)}
               >
                 <Text style={styles.modalButtonText}>Cancel</Text>
               </TouchableOpacity>
@@ -324,6 +345,13 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 15,
     fontFamily: 'Poppins-Regular',
+  },
+  modalText: {
+    fontSize: 16,
+    color: '#666',
+    fontFamily: 'Poppins-Regular',
+    marginBottom: 20,
+    textAlign: 'center',
   },
   modalButton: {
     backgroundColor: '#FFB0B0',

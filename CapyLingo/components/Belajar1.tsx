@@ -156,6 +156,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 12,
     elevation: 5,
+    width: '90%',
+    alignSelf: 'center',
+    maxWidth: 600,
   },
   greeting: {
     fontSize: 20,
@@ -199,6 +202,9 @@ const styles = StyleSheet.create({
   },
   levelSection: {
     marginTop: 20,
+    maxWidth: 1000,
+    width: '100%',
+    alignSelf: 'center',
   },
   touchableArea: {
     justifyContent: 'center',

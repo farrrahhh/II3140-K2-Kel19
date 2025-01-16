@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -12,9 +12,11 @@ import {
   KeyboardAvoidingView,
   Platform,
   Image,
+  ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import * as Font from 'expo-font'; // For font loading
 
 const { width } = Dimensions.get('window');
 
@@ -23,11 +25,22 @@ const Signup = () => {
   const [password, setPassword] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false); // Show/hide password
   const [errorMessage, setErrorMessage] = useState('');
+  const [fontsLoaded, setFontsLoaded] = useState(false);
   const router = useRouter();
 
   const fadeAnim = useState(new Animated.Value(0))[0];
 
-  React.useEffect(() => {
+  useEffect(() => {
+    const loadFonts = async () => {
+      await Font.loadAsync({
+        Poppins: require('../../assets/fonts/Poppins-Regular.ttf'),
+        'Poppins-Bold': require('../../assets/fonts/Poppins-Bold.ttf'),
+      });
+      setFontsLoaded(true);
+    };
+
+    loadFonts();
+
     Animated.timing(fadeAnim, {
       toValue: 1,
       duration: 1000,
@@ -68,10 +81,19 @@ const Signup = () => {
     }
   };
 
+  // Show loading spinner while fonts are loading
+  if (!fontsLoaded) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#FFB0B0" />
+      </View>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={styles.container}
       >
         <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -80,7 +102,10 @@ const Signup = () => {
               <View style={styles.logoContainer}>
                 <Image
                   source={require('../../assets/images/playing_music.png')}
-                  style={{ width: width / 1.2, height: width / 1.2 }}
+                  style={{
+                    width: width > 768 ? width / 3 : width / 1.2,
+                    height: width > 768 ? width / 3 : width / 1.2,
+                  }}
                   resizeMode="contain"
                 />
               </View>
@@ -152,6 +177,12 @@ const styles = StyleSheet.create({
   scrollContainer: {
     flexGrow: 1,
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#FFB0B0',
+  },
   content: {
     flex: 1,
   },
@@ -165,7 +196,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   formContainer: {
-    padding: 20,
+    padding: width > 768 ? 40 : 20,
     backgroundColor: '#fff',
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
@@ -184,15 +215,14 @@ const styles = StyleSheet.create({
     }),
   },
   formTitle: {
-    fontSize: 32,
-    fontFamily: 'Poppins',
-    fontWeight: 'bold',
+    fontSize: width > 768 ? 48 : 32,
+    fontFamily: 'Poppins-Bold',
     color: '#333',
     marginBottom: 10,
     textAlign: 'center',
   },
   formSubtitle: {
-    fontSize: 16,
+    fontSize: width > 768 ? 20 : 16,
     color: '#666',
     textAlign: 'center',
     marginBottom: 20,
@@ -219,7 +249,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     padding: 15,
-    fontSize: 16,
+    fontSize: width > 768 ? 20 : 16,
     fontFamily: 'Poppins',
   },
   eyeIcon: {
@@ -234,13 +264,13 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: '#333',
-    fontSize: 18,
+    fontSize: width > 768 ? 22 : 18,
     fontWeight: 'bold',
-    fontFamily: 'Poppins',
+    fontFamily: 'Poppins-Bold',
   },
   bottomLink: {
     marginTop: 20,
-    fontSize: 16,
+    fontSize: width > 768 ? 18 : 16,
     fontFamily: 'Poppins',
     textAlign: 'center',
     color: '#666',

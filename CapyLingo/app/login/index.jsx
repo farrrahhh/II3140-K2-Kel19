@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -12,23 +12,39 @@ import {
   KeyboardAvoidingView,
   Platform,
   Image,
+  ActivityIndicator,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Font from 'expo-font'; // Import font loader
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [isPasswordVisible, setIsPasswordVisible] = useState(false); // State untuk show/hide password
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [fontsLoaded, setFontsLoaded] = useState(false);
   const router = useRouter();
 
   const fadeAnim = useState(new Animated.Value(0))[0];
 
-  React.useEffect(() => {
+  // Load custom fonts
+  useEffect(() => {
+    const loadFonts = async () => {
+      await Font.loadAsync({
+        Poppins: require('../../assets/fonts/Poppins-Regular.ttf'),
+        'Poppins-Bold': require('../../assets/fonts/Poppins-Bold.ttf'),
+      });
+      setFontsLoaded(true);
+    };
+
+    loadFonts();
+  }, []);
+
+  useEffect(() => {
     Animated.timing(fadeAnim, {
       toValue: 1,
       duration: 1000,
@@ -54,14 +70,12 @@ const Login = () => {
       const result = await response.json();
 
       if (response.ok) {
-        // save token to async storage
         await AsyncStorage.setItem('token', result.token);
-        await AsyncStorage.setItem('userId', result.userId.toString()); 
+        await AsyncStorage.setItem('userId', result.userId.toString());
         await AsyncStorage.setItem('username', result.username);
         await AsyncStorage.setItem('level', result.level);
         await AsyncStorage.setItem('xp', result.xp.toString());
         await AsyncStorage.setItem('day_streak', result.day_streak.toString());
-        
 
         router.replace('/belajar');
       } else {
@@ -72,10 +86,19 @@ const Login = () => {
     }
   };
 
+  // Show a loading indicator while fonts are loading
+  if (!fontsLoaded) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#FFB0B0" />
+      </View>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={styles.container}
       >
         <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -84,7 +107,10 @@ const Login = () => {
               <View style={styles.logoContainer}>
                 <Image
                   source={require('../../assets/images/window.png')}
-                  style={{ width: width / 1.5, height: width / 1.5 }}
+                  style={{
+                    width: width > 768 ? width / 3 : width / 1.5,
+                    height: width > 768 ? width / 3 : width / 1.5,
+                  }}
                   resizeMode="contain"
                 />
               </View>
@@ -112,7 +138,7 @@ const Login = () => {
                   placeholder="Password"
                   value={password}
                   onChangeText={setPassword}
-                  secureTextEntry={!isPasswordVisible} // Tampilkan password jika isPasswordVisible true
+                  secureTextEntry={!isPasswordVisible}
                   placeholderTextColor="#888"
                 />
                 <TouchableOpacity
@@ -135,9 +161,7 @@ const Login = () => {
                 </Text>
               </TouchableOpacity>
             </View>
-            <View style={styles.footer} >
-
-            </View>
+            <View style={styles.footer} />
           </Animated.View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -150,9 +174,14 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#ffb0b0',
   },
-  
   scrollContainer: {
     flexGrow: 1,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#FFB0B0',
   },
   content: {
     flex: 1,
@@ -167,15 +196,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   formContainer: {
-    padding: 20,
+    padding: width > 768 ? 40 : 20,
     backgroundColor: '#fff',
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
     marginTop: -30,
     flex: 1,
     zIndex: 1,
-    
-    
     ...Platform.select({
       ios: {
         shadowColor: '#000',
@@ -189,15 +216,14 @@ const styles = StyleSheet.create({
     }),
   },
   formTitle: {
-    fontSize: 32,
-    fontFamily: 'Poppins',
-    fontWeight: 'bold',
+    fontSize: width > 768 ? 48 : 32,
+    fontFamily: 'Poppins-Bold',
     color: '#333',
     marginBottom: 10,
     textAlign: 'center',
   },
   formSubtitle: {
-    fontSize: 16,
+    fontSize: width > 768 ? 20 : 16,
     color: '#666',
     textAlign: 'center',
     marginBottom: 20,
@@ -224,7 +250,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     padding: 15,
-    fontSize: 16,
+    fontSize: width > 768 ? 20 : 16,
     fontFamily: 'Poppins',
   },
   eyeIcon: {
@@ -239,13 +265,13 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: '#333',
-    fontSize: 18,
+    fontSize: width > 768 ? 22 : 18,
     fontWeight: 'bold',
-    fontFamily: 'Poppins',
+    fontFamily: 'Poppins-Bold',
   },
   bottomLink: {
     marginTop: 20,
-    fontSize: 16,
+    fontSize: width > 768 ? 18 : 16,
     fontFamily: 'Poppins',
     textAlign: 'center',
     color: '#666',

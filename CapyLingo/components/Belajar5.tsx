@@ -11,11 +11,13 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
+import * as Font from 'expo-font';
 
 const Belajar5 = () => {
   const [username, setUsername] = useState<string>('User');
   const [level, setLevel] = useState<number>(5); // Default level 5
   const router = useRouter();
+  const [fontsLoaded, setFontsLoaded] = useState(false);
 
   // Animasi naik-turun untuk level 5
   const animation = useRef(new Animated.Value(0)).current;
@@ -25,6 +27,7 @@ const Belajar5 = () => {
       try {
         const storedUsername = await AsyncStorage.getItem('username');
         const storedLevel = await AsyncStorage.getItem('level');
+        
 
         if (storedUsername) setUsername(storedUsername);
         if (storedLevel) setLevel(parseInt(storedLevel, 10));
@@ -34,6 +37,22 @@ const Belajar5 = () => {
     };
 
     fetchUserData();
+  }, []);
+  useEffect(() => {
+    // Load fonts using expo-font
+    const loadFonts = async () => {
+      try {
+        await Font.loadAsync({
+          'Poppins-Bold': require('../assets/fonts/Poppins-Bold.ttf'),
+          'Poppins-Regular': require('../assets/fonts/Poppins-Regular.ttf'),
+        });
+        setFontsLoaded(true);
+      } catch (error) {
+        console.error('Error loading fonts:', error);
+      }
+    };
+
+    loadFonts();
   }, []);
 
   useEffect(() => {
@@ -72,10 +91,14 @@ const Belajar5 = () => {
       return (
         <View
           key={item.id}
-          style={{
-            alignItems: item.align,
-            marginHorizontal: 20, // Margin kanan-kiri untuk ikon
-          }}
+          style={[
+            styles.levelSection,
+            {
+              alignItems: item.align,
+              marginHorizontal: 15, // Margin kanan-kiri untuk ikon
+            },
+          ]}
+          
         >
           {isActive ? (
             <TouchableOpacity
@@ -140,6 +163,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+   
   },
   scrollContent: {
     flexGrow: 1,
@@ -158,6 +182,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 12,
     elevation: 5,
+    maxWidth: 600,
+    width: '90%',
+    alignSelf: 'center',
   },
   greeting: {
     fontSize: 20,
@@ -201,6 +228,10 @@ const styles = StyleSheet.create({
   },
   levelSection: {
     marginTop: 20,
+    maxWidth: 1000,
+    width: '100%',
+    alignSelf: 'center',
+
   },
   touchableArea: {
     justifyContent: 'center',

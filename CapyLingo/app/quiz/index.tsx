@@ -325,6 +325,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins-Regular',
     color: '#58CC02',
     marginTop: 10,
+    textAlign: 'center',
   },
   footer: {
     padding: 16,
