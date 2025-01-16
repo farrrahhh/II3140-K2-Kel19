@@ -5,7 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
-  Alert,
+  Modal,
   SafeAreaView,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -28,12 +28,12 @@ const Quiz: React.FC = () => {
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [correctAnswer, setCorrectAnswer] = useState<string | null>(null);
+  const [confirmationModalVisible, setConfirmationModalVisible] = useState<boolean>(false);
 
   const router = useRouter();
   const searchParams = useSearchParams();
-  const level_quiz = searchParams.get('level'); // Ambil level quiz dari query parameter
+  const level_quiz = searchParams.get('level'); // Retrieve the quiz level from query parameters
 
-  // Load Poppins font
   const [fontsLoaded] = useFonts({
     'Poppins-Regular': require('../../assets/fonts/Poppins-Regular.ttf'),
     'Poppins-Bold': require('../../assets/fonts/Poppins-Bold.ttf'),
@@ -51,7 +51,6 @@ const Quiz: React.FC = () => {
       const token = await AsyncStorage.getItem('token');
 
       if (!level_quiz || !token) {
-        Alert.alert('Error', 'Level quiz or token not found. Redirecting to login.');
         router.replace('/login');
         return;
       }
@@ -80,12 +79,10 @@ const Quiz: React.FC = () => {
         }));
         setQuestions(formattedQuestions);
       } else {
-        Alert.alert('Error', result.message || 'Failed to load quiz data');
         router.replace('/belajar');
       }
     } catch (error) {
       console.error('Error fetching quiz data:', error);
-      Alert.alert('Error', 'An error occurred while fetching quiz data. Please try again.');
       router.replace('/belajar');
     } finally {
       setIsLoading(false);
@@ -113,11 +110,12 @@ const Quiz: React.FC = () => {
       setIsCorrect(null);
       setCorrectAnswer(null);
     } else {
-      submitQuizResult();
+      setConfirmationModalVisible(true);
     }
   };
 
   const submitQuizResult = async () => {
+    setConfirmationModalVisible(false);
     const userIdString = await AsyncStorage.getItem('userId');
     let userId: number | null = null;
     if (userIdString) {
@@ -127,7 +125,6 @@ const Quiz: React.FC = () => {
     const token = await AsyncStorage.getItem('token');
 
     if (!userId || !quizId || !token) {
-      Alert.alert('Error', 'User or quiz not identified');
       return;
     }
 
@@ -151,15 +148,10 @@ const Quiz: React.FC = () => {
       if (response.ok) {
         await AsyncStorage.setItem('level', result.newLevel.toString());
         await AsyncStorage.setItem('xp', result.xp.toString());
-        Alert.alert('Quiz Complete', result.message, [
-          { text: 'Go to Dashboard', onPress: () => router.replace('/belajar') },
-        ]);
-      } else {
-        Alert.alert('Error', result.message);
+        router.replace('/belajar');
       }
     } catch (error) {
       console.error('Error submitting quiz result:', error);
-      Alert.alert('Error', 'An error occurred while submitting the quiz result. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -170,14 +162,6 @@ const Quiz: React.FC = () => {
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#FFB0B0" />
         <Text style={styles.loadingText}>Loading...</Text>
-      </View>
-    );
-  }
-
-  if (questions.length === 0) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.errorText}>No questions available. Please try again later.</Text>
       </View>
     );
   }
@@ -193,9 +177,7 @@ const Quiz: React.FC = () => {
           </TouchableOpacity>
         </View>
 
-        {currentQuestionIndex === 0 && (
-          <Text style={styles.title}>Bacalah dan jawab pertanyaannya!</Text>
-        )}
+        <Text style={styles.title}>Bacalah dan jawab pertanyaannya!</Text>
 
         <View style={styles.content}>
           <Text style={styles.question}>
@@ -216,10 +198,6 @@ const Quiz: React.FC = () => {
               </TouchableOpacity>
             ))}
           </View>
-
-          {selectedAnswer && !isCorrect && correctAnswer && (
-            <Text style={styles.correctAnswerText}>Correct Answer: {correctAnswer}</Text>
-          )}
         </View>
 
         <View style={styles.footer}>
@@ -243,6 +221,35 @@ const Quiz: React.FC = () => {
             </TouchableOpacity>
           )}
         </View>
+
+        {/* Confirmation Modal */}
+        <Modal
+          transparent={true}
+          visible={confirmationModalVisible}
+          animationType="fade"
+          onRequestClose={() => setConfirmationModalVisible(false)}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContainer}>
+              <Text style={styles.modalTitle}>Are you sure?</Text>
+              <Text style={styles.modalMessage}>Do you want to finish the quiz?</Text>
+              <View style={styles.modalActions}>
+                <TouchableOpacity
+                  style={[styles.modalButton, styles.cancelButton]}
+                  onPress={() => setConfirmationModalVisible(false)}
+                >
+                  <Text style={styles.modalButtonText}>Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.modalButton, styles.confirmButton]}
+                  onPress={submitQuizResult}
+                >
+                  <Text style={styles.modalButtonText}>Finish</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
       </View>
     </SafeAreaView>
   );
@@ -257,7 +264,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FFF',
     padding: 16,
-    // margin top
     marginTop: 20,
   },
   loadingContainer: {
@@ -269,7 +275,6 @@ const styles = StyleSheet.create({
     marginTop: 10,
     fontSize: 16,
     color: '#FFB0B0',
-    fontFamily: 'Poppins-Regular',
   },
   header: {
     flexDirection: 'row',
@@ -277,7 +282,6 @@ const styles = StyleSheet.create({
   },
   backButton: {
     padding: 8,
-    
   },
   title: {
     fontSize: 32,
@@ -314,18 +318,9 @@ const styles = StyleSheet.create({
   },
   correct: {
     backgroundColor: '#D7FFB8',
-    borderColor: '#58CC02',
   },
   incorrect: {
     backgroundColor: '#FFDFE0',
-    borderColor: '#FF4B4B',
-  },
-  correctAnswerText: {
-    fontSize: 16,
-    fontFamily: 'Poppins-Regular',
-    color: '#58CC02',
-    marginTop: 10,
-    textAlign: 'center',
   },
   footer: {
     padding: 16,
@@ -351,12 +346,53 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'Poppins-Bold',
   },
-  errorText: {
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContainer: {
+    width: '80%',
+    backgroundColor: '#FFF',
+    borderRadius: 10,
+    padding: 20,
+    alignItems: 'center',
+    maxWidth: 400,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontFamily: 'Poppins-Bold',
+    marginBottom: 10,
+  },
+  modalMessage: {
     fontSize: 16,
     fontFamily: 'Poppins-Regular',
-    color: '#FF4B4B',
-    textAlign: 'left',
-    marginTop: 10,
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  modalActions: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  modalButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    marginHorizontal: 10,
+   
+  },
+  cancelButton: {
+    backgroundColor: '#CCC',
+  },
+  confirmButton: {
+    backgroundColor: '#FFB0B0',
+  },
+  modalButtonText: {
+    color: '#FFF',
+    fontSize: 16,
+    textAlign: 'center',
   },
 });
 
